@@ -16,13 +16,13 @@ Home
                     </div>
 
                     <div class="carousel-item">
-                        <img src="{{ url_for('static', filename='img/pexels-cottonbro-5158945.jpg') }}"
+                        <img src="{{ url_for('static', filename='img/pexels-cottonbro-5158945.jpg') }}" loading="lazy"
                             class="d-block w-100">
                     </div>
 
                     <div class="carousel-item">
                         <img src="{{ url_for('static', filename='img/pexels-pavel-danilyuk-7776179.jpg') }}"
-                            class="d-block w-100">
+                            loading="lazy" class="d-block w-100">
                     </div>
                     <div class="carousel-caption text-start text-center text-end">
                         <h1 class="fw-bold ">Find Your Perfect Roommate</h1>
@@ -31,10 +31,10 @@ Home
                             <div class="col-12 col-lg-10">
                                 {{ form.hidden_tag() }}
                                 <div class="search_area">
-                                    <div class="row g-3 align-items-end">
+                                    <div class="row g-3 align-items-end justify-content-center py-2 px-3">
 
                                         <div class="col-12 col-md-4">
-                                            <label class="text-dark w-100">
+                                            <label class="text-dark w-100 text-start">
                                                 Suburb or Postcode
                                                 {{ form.location(
                                                 class="form-control",
@@ -44,27 +44,27 @@ Home
                                         </div>
 
                                         <div class="col-6 col-md-2">
-                                            <label class="text-dark w-100">
+                                            <label class="text-dark w-100 text-start">
                                                 Property Type
                                                 {{ form.property_type(class="form-select") }}
                                             </label>
                                         </div>
 
                                         <div class="col-6 col-md-2">
-                                            <label class="text-dark w-100">
+                                            <label class="text-dark w-100 text-start">
                                                 Weekly Rent
                                                 {{ form.price_range(class="form-select") }}
                                             </label>
                                         </div>
 
                                         <div class="col-6 col-md-2">
-                                            <label class="text-dark w-100">
+                                            <label class="text-dark w-100 text-start">
                                                 Bedrooms
                                                 {{ form.bedrooms(class="form-select") }}
                                             </label>
                                         </div>
 
-                                        <div class="col-6 col-md-2">
+                                        <div id="search-submit" class="col-6 col-md-2">
                                             {{ form.submit(class="btn btn-dark w-100 py-2") }}
                                         </div>
                                     </div>
@@ -99,24 +99,30 @@ Home
                 <div class="row align-items-end">
                     <div class="col-12 col-md-9">
                         <div class="d-flex flex-wrap gap-2 mt-2">
-                            <button class="btn btn-outline-primary rounded-pill px-3">Clean</button>
-                            <button class="btn btn-outline-primary rounded-pill px-3">Pet Friendly</button>
-                            <button class="btn btn-outline-primary rounded-pill px-3">Non-Smoker</button>
-                            <button class="btn btn-outline-primary rounded-pill px-3">Student</button>
-                            <button class="btn btn-outline-primary rounded-pill px-3">Quiet</button>
-                            <button class="btn btn-outline-primary rounded-pill px-3">Social</button>
-                            <button class="btn btn-outline-primary rounded-pill px-3">Early Riser</button>
-                            <button class="btn btn-outline-primary rounded-pill px-3">Night Owl</button>
+                            {% for pref in preferences %}
+                            <input type="checkbox" class="btn-check" name="preferences" value="{{ pref.id }}"
+                                id="pref{{ pref.id }}" {% if pref.id|string in request.form.getlist('preferences' ) %}
+                                checked {% endif %}>
+                            <label for="pref{{ pref.id }}" class="btn btn-outline-dark rounded-pill px-3">
+                                {{ pref.name }}
+                            </label>
+                            {% endfor %}
                         </div>
                     </div>
                     <div class="col-12 col-md-3 d-flex justify-content-md-end mt-3 mt-md-0">
-                        <div class="w-100">
-                            <label class="text-dark w-100">
-                                {{ form.sort_by(
-                                class="form-select rounded-pill border-dark",
-                                ) }}
-                            </label>
+
+                        <div class="w-100 d-flex flex-row gap-2 align-items-center justify-content-end">
+
+                            {{ form.sort_by(
+                            class="form-select rounded-pill border-dark"
+                            ) }}
+
+                            {{ form.submit(
+                            class="btn rounded-pill btn-dark px-4"
+                            ) }}
+
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -130,7 +136,8 @@ Home
                 {% for property in properties %}
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="card shadow-sm border-0 h-100">
-                        <img src="{{ url_for('static', filename=property.image) }}" class="card-img-top">
+                        <img src="{{ url_for('static', filename=property.image) }}" class="card-img-top" loading="lazy"
+                            width="400" height="250">
                         <div class="card-body">
                             <div class="d-flex flex-row align-items-center gap-2">
                                 <h5 class="card-title m-0">
@@ -149,7 +156,7 @@ Home
                                     </button>
                                 </div>
                             </div>
-                            <p class="text-muted">
+                            <p class="text-muted mt-1 mb-0">
                                 {{ property.suburb }}, {{property.city }}, {{ property.postcode }}
                             </p>
                             <p class="mb-0">
@@ -160,10 +167,29 @@ Home
                                 {{ property.bedrooms }} bedrooms •
                                 {{ property.bathrooms }} bath
                             </p>
-                            <!-- <span class="badge bg-{{ property.badge }} rounded-pill mb-3 p-2">
-                            {{ property.compatibility }}
-                        </span> -->
-                            <a href="#" class="btn btn-primary rounded-pill w-100">View Details </a>
+                            {% if user and user.role == "buyer" %}
+                            <span class="
+                                                                    badge rounded-pill mb-3 p-2
+                                                                
+                                                                    {% if property.compatibility >= 70 %}
+                                                                        bg-success
+                                                                    {% elif property.compatibility >= 40 %}
+                                                                        bg-warning
+                                                                    {% else %}
+                                                                        bg-danger
+                                                                    {% endif %}
+                                                                ">
+                                {% if property.compatibility >= 70 %}
+                                High Compatibility
+                                {% elif property.compatibility >= 40 %}
+                                Medium Compatibility
+                                {% else %}
+                                Low Compatibility
+                                {% endif %}
+                                - {{ property.compatibility }}%
+                            </span>
+                            {% endif %}
+                            <a href="#" class="btn btn-outline-dark rounded-pill w-100 mt-2">View Details </a>
                         </div>
                     </div>
                 </div>

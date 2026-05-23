@@ -70,5 +70,5 @@ class SearchForm(FlaskForm):
     ]
 )
 
-    submit = SubmitField("Search")
+    submit = SubmitField("Apply")
 
