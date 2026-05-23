@@ -68,6 +68,8 @@ def search_properties(form):
         query += " ORDER BY price ASC"
     elif form.sort_by.data == "price_high":
         query += " ORDER BY price DESC"
+    else:
+        query += " ORDER BY created_at DESC"
 
     cur = mysql.connection.cursor()
     cur.execute(query, tuple(params))
