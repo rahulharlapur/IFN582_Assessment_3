@@ -1,5 +1,64 @@
 from . import mysql
-from .models import Property
+from .models import Property, User
+
+
+def create_user(form):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO users (
+            firstname,
+            lastname,
+            email,
+            password,
+            phone,
+            role
+        )
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (
+        form.firstname.data,
+        form.lastname.data,
+        form.email.data,
+        form.password.data,
+        form.phone.data,
+        form.role.data
+    ))
+    mysql.connection.commit()
+    cur.close()
+
+
+def check_for_user(email, password):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT *
+        FROM users
+        WHERE email = %s AND password = %s
+    """, (email, password))
+    row = cur.fetchone()
+    cur.close()
+    if row:
+        return User(
+            row['id'],
+            row['firstname'],
+            row['lastname'],
+            row['email'],
+            row['password'],
+            row['phone'],
+            row['role']
+        )
+    return None
+
+def user_exists(email):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT *
+        FROM users
+        WHERE email = %s
+    """, (email,))
+    row = cur.fetchone()
+    cur.close()
+    return row is not None
+
+
 def get_properties():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM properties ORDER BY created_at DESC")

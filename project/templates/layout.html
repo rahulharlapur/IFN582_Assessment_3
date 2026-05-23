@@ -33,15 +33,16 @@
                     <div class="collapse navbar-collapse g md-d-flex md-row md-align-items-center"
                         id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto">
-                            <li class="nav-item ms-3 ms-lg-0 ">
-                                <a class="nav-link text-black text-center" href="{{ url_for('main.index') }}">Home</a>
-                            </li>
+                            {% set user = session.get("user") %}
+                            {% if user and user.get("role") == "buyer" %}
                             <li class="nav-item ms-3 ms-lg-0 ">
                                 <a class="nav-link text-black text-center" href="./bookmarks.html">Bookmarks</a>
                             </li>
                             <li class="nav-item ms-3 ms-lg-0 ">
                                 <a class="nav-link text-black text-center" href="./enquiries.html">Enquiries</a>
                             </li>
+                            {% endif %}
+                            {% if user and (user.get("role") == "admin" or user.get("role") == "seller") %}
                             <li class="nav-item ms-3 ms-lg-0">
                                 <a class="nav-link px-2 text-black text-center" href="list_property.html">List
                                     Property</a>
@@ -50,12 +51,10 @@
                                 <a class="nav-link px-2 text-black text-center" href="listings.html">My
                                     Listings</a>
                             </li>
+                            {% endif %}
                         </ul>
 
                         <div class="d-flex align-items-center justify-content-center gap-2 mt-2 mt-lg-0">
-                            <button class="btn btn-primary rounded-pill px-3">
-                                <a href="login.html" class="text-white text-decoration-none">Login</a>
-                            </button>
                             <div class="d-flex justify-content-center align-items-center text-center gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor"
                                     class="bi bi-person-circle" viewBox="0 0 16 16">
@@ -64,7 +63,12 @@
                                         d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
                                 </svg>
                             </div>
-
+                            {% if user %}
+                            <span class="text-muted">Welcome, {{ user.get("firstname") }}!</span>
+                            <a href="{{ url_for('main.logout') }}" class="btn btn-outline-primary btn-sm">Logout</a>
+                            {% else %}
+                            <a href="{{ url_for('main.login') }}" class="btn btn-outline-primary rounded-pill px-3">Login</a>
+                            {% endif %}
                         </div>
 
                     </div>
@@ -72,7 +76,23 @@
             </nav>
         </div>
     </section>
-
+    <div class="position-fixed top-5 end-0 p-3" style="
+        z-index: 9999;
+        width: 100%;
+        max-width: 500px;
+    ">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert">
+            </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
     <div>
 
         {% block content %}
