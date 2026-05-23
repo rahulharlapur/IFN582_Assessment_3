@@ -1,3 +1,5 @@
+from flask import session
+
 from . import mysql
 from .models import Preference, Property, User
 
@@ -214,24 +216,25 @@ def calculate_compatibility(property_id, user_id):
     return compatibility
 
 def save_user_preferences(user_id, selected_preferences):
-    cur = mysql.connection.cursor()
-
-    cur.execute("""
-        DELETE FROM user_preferences
-        WHERE user_id = %s
-    """, (user_id,))
-
-    for pref_id in selected_preferences:
+    if session.get("logged_in") and session["user"]["role"] == "buyer":
+        cur = mysql.connection.cursor()
 
         cur.execute("""
-            INSERT INTO user_preferences
-            (user_id, preference_id)
-            VALUES (%s, %s)
-        """, (user_id, pref_id))
+            DELETE FROM user_preferences
+            WHERE user_id = %s
+        """, (user_id,))
 
-    mysql.connection.commit()
+        for pref_id in selected_preferences:
 
-    cur.close()
+            cur.execute("""
+                INSERT INTO user_preferences
+                (user_id, preference_id)
+                VALUES (%s, %s)
+            """, (user_id, pref_id))
+
+        mysql.connection.commit()
+
+        cur.close()
 
 def get_user_preferences(user_id):
     cur = mysql.connection.cursor()

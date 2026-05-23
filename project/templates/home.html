@@ -117,9 +117,9 @@ Home
                             class="form-select rounded-pill border-dark"
                             ) }}
 
-                            {{ form.submit(
-                            class="btn rounded-pill btn-dark px-4"
-                            ) }}
+                            <button type="submit" class="btn rounded-pill btn-dark px-4">
+                                Apply
+                            </button>
 
                         </div>
 
@@ -136,7 +136,7 @@ Home
                 {% for property in properties %}
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="card shadow-sm border-0 h-100">
-                        <img src="{{ url_for('static', filename=property.image) }}" class="card-img-top" loading="lazy"
+                        <img src="{{ url_for('static', filename=property.image) }}" class="card-img-top"
                             width="400" height="250">
                         <div class="card-body">
                             <div class="d-flex flex-row align-items-center gap-2">

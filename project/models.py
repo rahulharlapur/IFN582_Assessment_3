@@ -30,7 +30,6 @@ class Property:
     created_at: datetime
 
     compatibility: int = 0
-    badge: str = "success"
 
 @dataclass
 class Preference:

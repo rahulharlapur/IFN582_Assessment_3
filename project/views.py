@@ -14,7 +14,7 @@ def index():
     if session.get("logged_in") and session["user"]["role"] == "buyer":
         user_preferences = get_user_preferences(session["user"]["id"])
         for property in properties:
-            property.compatibility = calculate_compatibility(session["user"]["id"], property.id)
+            property.compatibility = calculate_compatibility(property.id,session["user"]["id"])
             if property.compatibility >= 80:
                 property.badge = "success"
             elif property.compatibility >= 50:
@@ -29,25 +29,22 @@ def index():
 def search():
     form = SearchForm()
     selected_preferences = request.form.getlist('preferences')
+    user_preferences = []
     if form.validate_on_submit():
         properties = search_properties(form, selected_preferences)
     else:
         properties = get_properties()
     if session.get("logged_in") and session["user"]["role"] == "buyer":
+        user_preferences = get_user_preferences(session["user"]["id"])
         for property in properties:
-            property.compatibility = calculate_compatibility(session["user"]["id"], property.id)
-            if property.compatibility >= 80:
-                property.badge = "success"
-            elif property.compatibility >= 50:
-                property.badge = "warning"
-            else:
-                property.badge = "danger"
+            property.compatibility = calculate_compatibility(property.id,session["user"]["id"])
     preferences = get_preferences()
     return render_template(
         'home.html',
         form=form,
         properties=properties,
-        preferences=preferences
+        preferences=preferences,
+        user_preferences=user_preferences
     )
 
 @bp.route('/register', methods=['GET', 'POST'])
