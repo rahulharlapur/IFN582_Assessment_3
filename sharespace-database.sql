@@ -141,3 +141,79 @@ VALUES
     'img/pexels-artbovich-7195864.jpg',
     'Well-maintained apartment with peaceful shared living spaces.'
 );
+
+
+CREATE TABLE preferences (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    name VARCHAR(100) NOT NULL UNIQUE
+
+);
+
+INSERT INTO preferences (name)
+VALUES
+('Clean'),
+('Pet Friendly'),
+('Non-Smoker'),
+('Student'),
+('Quiet'),
+('Social'),
+('Early Riser'),
+('Night Owl');
+
+
+CREATE TABLE property_preferences (
+
+    property_id INT NOT NULL,
+
+    preference_id INT NOT NULL,
+
+    PRIMARY KEY (property_id, preference_id),
+
+    FOREIGN KEY (property_id)
+        REFERENCES properties(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (preference_id)
+        REFERENCES preferences(id)
+        ON DELETE CASCADE
+
+);
+
+INSERT INTO property_preferences
+(property_id, preference_id)
+VALUES
+(1, 2),
+(1, 4),
+(1, 5),
+(2, 1),
+(2, 3),
+(3, 4);
+
+
+CREATE TABLE user_preferences (
+
+    user_id INT NOT NULL,
+
+    preference_id INT NOT NULL,
+
+    PRIMARY KEY (user_id, preference_id),
+
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (preference_id)
+        REFERENCES preferences(id)
+        ON DELETE CASCADE
+
+);
+
+
+INSERT INTO user_preferences
+(user_id, preference_id)
+VALUES
+(1, 3),
+(1, 4),
+(1, 5);

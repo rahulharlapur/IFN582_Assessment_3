@@ -28,3 +28,20 @@ class Property:
     image: str
     description: str
     created_at: datetime
+
+    compatibility: int = 0
+
+@dataclass
+class Preference:
+    id: int
+    name: str   
+
+@dataclass
+class PropertyPreference:
+    property_id: int
+    preference_id: int
+
+@dataclass
+class UserPreference:
+    user_id: int
+    preference_id: int
