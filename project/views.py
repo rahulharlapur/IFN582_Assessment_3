@@ -14,7 +14,6 @@ def index():
 
 @bp.route('/search', methods=['GET', 'POST'])
 def search():
-
     form = SearchForm()
     if form.validate_on_submit():
         properties = search_properties(form)

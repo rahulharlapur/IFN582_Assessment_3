@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS sharespace;
 create database sharespace;
-use sharespace
+use sharespace;
 
 CREATE TABLE properties (
 
