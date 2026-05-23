@@ -25,7 +25,7 @@
                                 d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
                         </svg>
                     </div>
-                    <a class="navbar-brand fw-bold text-center" href="./index.html">ShareSpace</a>
+                    <a class="navbar-brand fw-bold text-center" href="{{ url_for('main.index') }}">ShareSpace</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent">
                         <span class="navbar-toggler-icon"></span>
@@ -34,7 +34,7 @@
                         id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto">
                             <li class="nav-item ms-3 ms-lg-0 ">
-                                <a class="nav-link text-black text-center" href="./index.html">Home</a>
+                                <a class="nav-link text-black text-center" href="{{ url_for('main.index') }}">Home</a>
                             </li>
                             <li class="nav-item ms-3 ms-lg-0 ">
                                 <a class="nav-link text-black text-center" href="./bookmarks.html">Bookmarks</a>
@@ -53,13 +53,6 @@
                         </ul>
 
                         <div class="d-flex align-items-center justify-content-center gap-2 mt-2 mt-lg-0">
-
-                            <form id="search-form" class="d-flex gap-2">
-                                <input id="search-box" class="form-control border-dark rounded-pill" type="search"
-                                    placeholder="Search">
-                                <button class="btn btn-outline-dark rounded-pill px-3">Search</button>
-                            </form>
-
                             <button class="btn btn-primary rounded-pill px-3">
                                 <a href="login.html" class="text-white text-decoration-none">Login</a>
                             </button>
