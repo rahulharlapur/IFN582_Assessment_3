@@ -111,16 +111,6 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-@media (max-width: 767px) {
-    .row.border {
-        border: none !important;
-
-    }
-
-    .border-start {
-        border-left: none !important;
-    }
-}
 
 
 .property-card {
@@ -181,15 +171,15 @@ body {
     font-weight: 500;
 }
 
-#property_details{
+#property_details {
     background-image: url('../img/pexels-thomas-plets-1139798-5403840.jpg');
     background-size: cover;
     background-position: center;
 }
 
 .property-card {
-    background: rgba(255, 255, 255, 0.1); 
-    backdrop-filter: blur(12px); 
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -249,5 +239,74 @@ body {
     backdrop-filter: blur(12px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     font-weight: 500;
+}
+
+
+
+.search_area {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.search_area label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 4px;
+    display: block;
+}
+
+@media (max-width: 768px) {
+
+    .row.border {
+        border: none !important;
+    }
+
+    .border-start {
+        border-left: none !important;
+    }
+
+    .carousel-item img {
+        height: 650px;
+        object-fit: cover;
+    }
+
+    .carousel-caption {
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        right: 10px;
+        bottom: auto;
+        transform: translateY(-50%);
+        padding: 0;
+        z-index: 2;
+    }
+
+    .carousel-caption h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+
+    .carousel-caption p {
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+    }
+
+    .search_area {
+        padding: 16px;
+        margin-top: 12px;
+    }
+
+    .search_area label {
+        width: 100%;
+    }
+
+    .search_area .form-control,
+    .search_area .form-select,
+    .search_area button {
+        width: 100%;
+        min-height: 45px;
+    }
 }
 

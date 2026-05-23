@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign Up - ShareSpace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <section>
+        <div id="header" class="border-bottom border-dark">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid px-5 d-flex justify-content-center align-items-center py-2">
+                    <div class="me-2 d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" fill="currentColor"
+                            class="bi bi-share">
+                            <path
+                                d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
+                        </svg>
+                    </div>
+                    <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">ShareSpace</a>
+                </div>
+            </nav>
+        </div>
+    </section>
+    <div class="position-fixed top-5 end-0 p-3" style="
+        z-index: 9999;
+        width: 100%;
+        max-width: 500px;
+    ">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert">
+            </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <section id="signup" class="py-5" style="min-height: 95vh;">
+        <div class="container px-auto">
+            <div class="row justify-content-center p-4">
+                <div id="signup-card" class="col-md-6 col-lg-5 col-sm-10 border rounded-3 p-4 form-card">
+                    <div class="text-center border-gray mb-4">
+                        <h3 class="mb-3 fw-bold">Sign Up</h3>
+                    </div>
+                    <form method="POST" action="{{ url_for('main.register') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label class="form-label">
+                                First Name
+                            </label>
+                            {{ form.firstname(
+                            class="form-control",
+                            placeholder="Enter your first name"
+                            ) }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Last Name
+                            </label>
+                            {{ form.lastname(
+                            class="form-control",
+                            placeholder="Enter your last name"
+                            ) }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            {{ form.email(
+                            class="form-control",
+                            placeholder="Enter your email"
+                            ) }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            {{ form.password(
+                            class="form-control",
+                            placeholder="Create a password"
+                            ) }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Phone Number
+                            </label>
+
+                            {{ form.phone(
+                            class="form-control",
+                            placeholder="Enter your phone number"
+                            ) }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Select Role</label>
+                            {{ form.role(
+                            class="form-select"
+                            ) }}
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            {{ form.submit(
+                            class="btn btn-primary rounded-pill w-75"
+                            ) }}
+                        </div>
+                    </form>
+                </div>
+                <div class="text-center mt-3">
+                    <span class="text-muted">Already have an account?</span>
+                    <a href="{{ url_for('main.login') }}" class="fw-bold">Login</a>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
