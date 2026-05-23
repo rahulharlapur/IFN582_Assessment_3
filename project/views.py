@@ -6,9 +6,9 @@ bp = Blueprint('main', __name__)
 
 @bp.route('/')
 def index():
-        form = SearchForm()
-        properties = get_properties()
-        return render_template('home.html', form=form, properties=properties)
+    form = SearchForm()
+    properties = get_properties()
+    return render_template('home.html', form=form, properties=properties)
 
 
 
