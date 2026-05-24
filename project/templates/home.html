@@ -189,7 +189,8 @@ Home
                                 - {{ property.compatibility }}%
                             </span>
                             {% endif %}
-                            <a href="#" class="btn btn-outline-dark rounded-pill w-100 mt-2">View Details </a>
+                           <a href="{{ url_for('main.property_details', property_id=property.id) }}"
+    class="btn btn-outline-dark rounded-pill w-100 mt-2">View Details</a>
                         </div>
                     </div>
                 </div>

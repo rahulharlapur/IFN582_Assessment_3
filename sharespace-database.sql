@@ -114,11 +114,13 @@ CREATE TABLE user_preferences (
 
 CREATE TABLE enquiries (
 
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    enquiry_id INT AUTO_INCREMENT PRIMARY KEY,
 
     buyer_id INT NOT NULL,
 
     property_id INT NOT NULL,
+
+    subject VARCHAR(255) NOT NULL,
 
     message TEXT NOT NULL,
 
@@ -553,3 +555,59 @@ VALUES
 (6, 9, 330, 'rejected'),
 
 (5, 11, 250, 'pending');
+
+
+CREATE TABLE property_images (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    property_id INT NOT NULL,
+
+    image VARCHAR(255) NOT NULL,
+
+    display_order INT NOT NULL,
+
+    FOREIGN KEY (property_id)
+        REFERENCES properties(id)
+        ON DELETE CASCADE
+
+);
+
+
+INSERT INTO property_images
+(property_id, image, display_order)
+VALUES
+(1, 'img/pexels-artbovich-7019026.jpg', 1),
+(1, 'img/pexels-cottonbro-4781415.jpg', 2),
+(1, 'img/pexels-cottonbro-5158945.jpg', 3),
+
+(2, 'img/pexels-pixabay-271618.jpg', 1),
+(2, 'img/pexels-pavel-danilyuk-7776179.jpg', 2),
+
+(3, 'img/pexels-fotoaibe-1571453.jpg', 1),
+(3, 'img/pexels-artbovich-7195864.jpg', 2),
+
+(4, 'img/pexels-john-tekeridis-21837-1428348.jpg', 1),
+(4, 'img/pexels-curtis-adams-1694007-7028071.jpg', 2),
+
+(5, 'img/pexels-andrew-3201763.jpg', 1),
+(5, 'img/pexels-thomas-plets-1139798-5403840.jpg', 2),
+
+(6, 'img/pexels-artbovich-7195864.jpg', 1),
+(6, 'img/pexels-iris-35972950.jpg', 2);
+
+
+INSERT INTO enquiries
+(buyer_id, property_id, subject, message)
+
+VALUES
+
+(5, 1, 'Room availability', 'Is the room still available?'),
+
+(5, 3, 'Inspection request', 'Can I schedule an inspection this weekend?'),
+
+(6, 8, 'Utilities question', 'Are utilities included in rent?'),
+
+(6, 11, 'Parking question', 'Is parking available nearby?'),
+
+(5, 15, 'Pet policy', 'Are pets allowed in this apartment?');

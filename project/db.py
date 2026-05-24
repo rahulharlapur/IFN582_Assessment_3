@@ -84,6 +84,74 @@ def get_properties():
         )
         for row in properties
     ]
+def get_property_details(property_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT
+            p.id,
+            p.title,
+            p.property_type,
+            p.price,
+            p.suburb,
+            p.city,
+            p.postcode,
+            p.bedrooms,
+            p.bathrooms,
+            p.occupants,
+            p.image,
+            p.description,
+            p.created_at,
+            pi.image AS property_image,
+            pref.name AS preference_name
+        FROM properties p
+        LEFT JOIN property_images pi
+            ON p.id = pi.property_id
+        LEFT JOIN property_preferences pp
+            ON p.id = pp.property_id
+        LEFT JOIN preferences pref
+            ON pp.preference_id = pref.id
+        WHERE p.id = %s
+        ORDER BY pi.display_order ASC, pref.name ASC
+    """, (property_id,))
+
+    rows = cur.fetchall()
+    cur.close()
+
+    if not rows:
+        return None
+
+    first_row = rows[0]
+
+    property = Property(
+        first_row['id'],
+        first_row['title'],
+        first_row['property_type'],
+        float(first_row['price']),
+        first_row['suburb'],
+        first_row['city'],
+        first_row['postcode'],
+        first_row['bedrooms'],
+        first_row['bathrooms'],
+        first_row['occupants'],
+        first_row['image'],
+        first_row['description'],
+        first_row['created_at']
+    )
+
+    images = []
+    host_preferences = []
+
+    for row in rows:
+        if row['property_image'] and row['property_image'] not in images:
+            images.append(row['property_image'])
+
+        if row['preference_name'] and row['preference_name'] not in host_preferences:
+            host_preferences.append(row['preference_name'])
+
+    property.images = images
+    property.host_preferences = host_preferences
+
+    return property
 
 def search_properties(form, selected_preferences=None):
     query = "SELECT * FROM properties WHERE 1=1"
@@ -246,3 +314,22 @@ def get_user_preferences(user_id):
     preferences = cur.fetchall()
     cur.close()
     return [row['preference_id'] for row in preferences]
+
+def create_enquiry(property_id, buyer_id, form):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO enquiries (
+            property_id,
+            buyer_id,
+            subject,
+            message
+        )
+        VALUES (%s, %s, %s, %s)
+    """, (
+        property_id,
+        buyer_id,
+        form.subject.data,
+        form.message.data
+    ))
+    mysql.connection.commit()
+    cur.close()

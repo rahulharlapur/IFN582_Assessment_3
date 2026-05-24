@@ -30,6 +30,8 @@ class Property:
     created_at: datetime
 
     compatibility: int = 0
+    images: list = None
+    host_preferences: list = None
 
 @dataclass
 class Preference:
@@ -45,3 +47,12 @@ class PropertyPreference:
 class UserPreference:
     user_id: int
     preference_id: int
+
+@dataclass
+class Enquiry:
+    enquiry_id: int
+    property_id: int
+    buyer_id: int
+    subject: str
+    message: str
+    created_at: datetime
