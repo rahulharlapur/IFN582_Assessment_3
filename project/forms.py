@@ -33,9 +33,11 @@ class SearchForm(FlaskForm):
         "Type",
         choices=[
             ("Any Type", "Any Type"),
-            ("House", "House"),
-            ("Apartment", "Apartment"),
-            ("Unit", "Unit")
+            ("Shared Apartment", "Shared Apartment"),
+            ("Private Room", "Private Room"),
+            ("Shared House", "Shared House"),
+            ("Studio", "Studio"),
+            ("Entire Apartment", "Entire Apartment")
         ]
     )
 

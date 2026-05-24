@@ -60,6 +60,11 @@
                             class="form-control",
                             placeholder="Enter your first name"
                             ) }}
+                            {% for error in form.firstname.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                            {% endfor %}
                         </div>
                         <div class="mb-3">
                             <label class="form-label">
@@ -69,6 +74,11 @@
                             class="form-control",
                             placeholder="Enter your last name"
                             ) }}
+                            {% for error in form.lastname.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                            {% endfor %}
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
@@ -76,6 +86,11 @@
                             class="form-control",
                             placeholder="Enter your email"
                             ) }}
+                            {% for error in form.email.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                            {% endfor %}
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
@@ -83,6 +98,11 @@
                             class="form-control",
                             placeholder="Create a password"
                             ) }}
+                            {% for error in form.password.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                            {% endfor %}
                         </div>
                         <div class="mb-3">
                             <label class="form-label">
@@ -93,6 +113,11 @@
                             class="form-control",
                             placeholder="Enter your phone number"
                             ) }}
+                            {% for error in form.phone.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                            {% endfor %}
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Select Role</label>
