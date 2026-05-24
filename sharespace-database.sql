@@ -2,6 +2,26 @@ DROP DATABASE IF EXISTS sharespace;
 create database sharespace;
 use sharespace;
 
+CREATE TABLE users (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    firstname VARCHAR(100) NOT NULL,
+
+    lastname VARCHAR(100) NOT NULL,
+
+    email VARCHAR(255) NOT NULL UNIQUE,
+
+    password VARCHAR(255) NOT NULL,
+
+    phone VARCHAR(20) NOT NULL,
+
+    role ENUM('admin', 'seller', 'buyer') NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
+
 CREATE TABLE properties (
 
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -219,23 +239,5 @@ VALUES
 (1, 5);
 
 
-CREATE TABLE users (
 
-    id INT AUTO_INCREMENT PRIMARY KEY,
-
-    firstname VARCHAR(100) NOT NULL,
-
-    lastname VARCHAR(100) NOT NULL,
-
-    email VARCHAR(255) NOT NULL UNIQUE,
-
-    password VARCHAR(255) NOT NULL,
-
-    phone VARCHAR(20) NOT NULL,
-
-    role ENUM('admin', 'seller', 'buyer') NOT NULL,
-
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-);
 
