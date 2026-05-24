@@ -2,6 +2,18 @@ from flask import session
 from . import mysql
 from .models import Preference, Property, User
 
+FALLBACK_PROPERTY_IMAGES = [
+    'img/pexels-artbovich-7019026.jpg',
+    'img/pexels-pixabay-271618.jpg',
+    'img/pexels-fotoaibe-1571453.jpg',
+]
+
+FALLBACK_PROPERTY_DOCUMENTS = [
+    'documents/rental-application-checklist.txt',
+    'documents/condition-report.txt',
+    'documents/inspection-checklist.txt',
+]
+
 
 def create_user(form):
     cur = mysql.connection.cursor()
@@ -116,6 +128,8 @@ def get_management_properties(owner_id=None):
             p.suburb,
             p.city,
             p.postcode,
+            p.latitude,
+            p.longitude,
             p.bedrooms,
             p.bathrooms,
             p.occupants,
@@ -365,24 +379,35 @@ def get_property_details(property_id):
             p.suburb,
             p.city,
             p.postcode,
+            p.latitude,
+            p.longitude,
             p.bedrooms,
             p.bathrooms,
             p.occupants,
             p.seller_id,
+            u.firstname AS seller_firstname,
+            u.lastname AS seller_lastname,
+            u.email AS seller_email,
+            u.phone AS seller_phone,
             p.image,
             p.description,
             p.created_at,
             pi.image AS property_image,
+            pd.file_path AS document_path,
             pref.name AS preference_name
         FROM properties p
+        JOIN users u
+            ON p.seller_id = u.id
         LEFT JOIN property_images pi
             ON p.id = pi.property_id
+        LEFT JOIN property_documents pd
+            ON p.id = pd.property_id
         LEFT JOIN property_preferences pp
             ON p.id = pp.property_id
         LEFT JOIN preferences pref
             ON pp.preference_id = pref.id
         WHERE p.id = %s
-        ORDER BY pi.display_order ASC, pref.name ASC
+        ORDER BY pi.display_order ASC, pd.created_at ASC, pref.name ASC
     """, (property_id,))
 
     rows = cur.fetchall()
@@ -411,16 +436,27 @@ def get_property_details(property_id):
     )
 
     images = []
+    documents = []
     host_preferences = []
+    property.seller_firstname = first_row['seller_firstname']
+    property.seller_lastname = first_row['seller_lastname']
+    property.seller_email = first_row['seller_email']
+    property.seller_phone = first_row['seller_phone']
+    property.latitude = first_row['latitude']
+    property.longitude = first_row['longitude']
 
     for row in rows:
         if row['property_image'] and row['property_image'] not in images:
             images.append(row['property_image'])
 
+        if row['document_path'] and row['document_path'] not in documents:
+            documents.append(row['document_path'])
+
         if row['preference_name'] and row['preference_name'] not in host_preferences:
             host_preferences.append(row['preference_name'])
 
     property.images = images
+    property.documents = documents
     property.host_preferences = host_preferences
 
     return property

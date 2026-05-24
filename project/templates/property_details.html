@@ -5,227 +5,227 @@ Property Details
 {% endblock %}
 
 {% block content %}
-<section id="property_details">
-    <section class="py-4 text-center">
-        <h2 class="fw-bold" style="color: #e0e0e0;">Property Details</h2>
-        <p style="color: #6c757d;">
-            View detailed information about the property and host preferences
-        </p>
-    </section>
-    <section class="pb-5">
-        <div class="container">
-            <div class="row gx-5 p-4 property-card">
-                <div class="col-12 col-md-6">
-                    {% if property.images %}
-                    <div id="propertyCarousel" class="carousel slide">
-                        <div class="carousel-inner rounded-3 overflow-hidden">
-                            {% for image in property.images %}
-                            <div class="carousel-item {% if loop.first %}active{% endif %}">
-                                <img src="{{ url_for('static', filename=image) }}" class="d-block w-100"
-                                    alt="{{ property.title }}" {% if not loop.first %}loading="lazy"{% endif %}
-                                    decoding="async" />
-                            </div>
-                            {% endfor %}
+<section id="property_details" class="property-details-page">
+    <div class="container py-5">
+        <div class="property-detail-shell">
+            <div class="property-media-wrap">
+                {% if property.images %}
+                <div id="propertyCarousel" class="carousel slide">
+                    <div class="carousel-inner">
+                        {% for image in property.images %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <img src="{{ url_for('static', filename=image) }}" class="d-block w-100 property-hero-image"
+                                alt="{{ property.title }}" {% if not loop.first %}loading="lazy"{% endif %}
+                                decoding="async">
                         </div>
-                        <div class="row mt-3 g-2">
-                            {% for image in property.images %}
-                            <div class="col-4">
-                                <img src="{{ url_for('static', filename=image) }}"
-                                    class="img-fluid thumbnail-img {% if loop.first %}active{% endif %}"
-                                    alt="{{ property.title }}" loading="lazy" decoding="async" />
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon"></span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon"></span>
-                        </button>
+                        {% endfor %}
                     </div>
-                    {% else %}
-                    <div class="rounded-3 bg-light text-muted d-flex align-items-center justify-content-center"
-                        style="height: 360px;">
-                        No image available
-                    </div>
+                    {% if property.images|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                     {% endif %}
-
-                    {% if session.get("user") and session.get("user").get("role") == "buyer" %}
-                    <form method="POST" action="{{ url_for('main.save_property_bookmark', property_id=property.id) }}"
-                        class="mt-4 p-3 section-box">
-                        {{ bookmark_form.hidden_tag() }}
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="fw-semibold">Bookmark</span>
-                            {% if bookmark %}
-                            <span class="badge bg-success">Saved</span>
-                            {% endif %}
-                        </div>
-                        <textarea name="note" class="form-control mb-3" rows="3"
-                            placeholder="Write a short note about this property">{{ (bookmark.note or '') if bookmark else '' }}</textarea>
-                        <div class="d-flex flex-wrap gap-2">
-                            <button type="submit" class="btn btn-outline-dark rounded-pill">
-                                {% if bookmark %}Update Bookmark{% else %}Save Bookmark{% endif %}
-                            </button>
-                            {% if bookmark %}
-                            <button type="submit"
-                                formaction="{{ url_for('main.remove_property_bookmark', property_id=property.id) }}"
-                                class="btn btn-outline-danger rounded-pill">
-                                Remove Bookmark
-                            </button>
-                            {% endif %}
-                        </div>
-                    </form>
-                    {% endif %}
-
-                    <div class="mt-3 p-3 section-box">
-                        <p class="fw-semibold mb-2">Property details</p>
-                        <p class="property-desc text-dark fw-bold mb-0">
-                            {{ property.description }}
-                        </p>
-                    </div>
-
-                    <div class="mt-3 p-3 section-box">
-                        <p class="fw-semibold mb-2">Amenities and host preferences</p>
-                        <div class="d-flex flex-wrap gap-2">
-                            {% if property.host_preferences %}
-                            {% for preference in property.host_preferences %}
-                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3">{{ preference }}</span>
-                            {% endfor %}
-                            {% else %}
-                            <span class="text-muted">No preferences listed.</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="mt-3 p-3 section-box">
-                        <p class="fw-semibold mb-2">Property documents</p>
-                        <div class="d-flex flex-column gap-2">
-                            {% for document in document_links %}
-                            <div class="border rounded-3 p-3 bg-light">
-                                <div class="fw-semibold">{{ document.label }}</div>
-                                <div class="small text-muted">{{ document.description }}</div>
-                            </div>
-                            {% endfor %}
-                            {% if not document_links %}
-                            <span class="text-muted">No property documents have been uploaded for this listing yet.</span>
-                            {% endif %}
-                        </div>
-                    </div>
                 </div>
+                <div class="property-image-count">
+                    <i class="bi bi-images"></i>
+                    {{ property.images|length }} image{% if property.images|length != 1 %}s{% endif %}
+                </div>
+                {% if session.get("user") and session.get("user").get("role") == "buyer" %}
+                <button type="button" class="btn btn-light rounded-circle property-bookmark-action"
+                    data-bs-toggle="modal" data-bs-target="#bookmarkModal" aria-label="Bookmark property">
+                    <i class="bi {% if bookmark %}bi-bookmark-fill{% else %}bi-bookmark{% endif %}"></i>
+                </button>
+                {% endif %}
+                {% else %}
+                <div class="property-hero-image property-empty-image">
+                    No image available
+                </div>
+                {% endif %}
+            </div>
 
-                <div class="col-12 col-md-6 mt-4 mt-md-0">
-                    <div class="section-box p-3 mb-3">
-                        <div class="d-flex justify-content-between align-items-start gap-3">
-                            <div>
-                                <h2 class="fw-bold mb-1 text-dark">{{ property.title }}</h2>
-                                <p class="text-muted d-flex align-items-center gap-1 mb-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-geo-alt" viewBox="0 0 16 16">
-                                        <path
-                                            d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94" />
-                                        <path d="M8 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
-                                    </svg>
-                                    {{ property.suburb }}, {{ property.city }}, {{ property.postcode }}
-                                </p>
-                            </div>
-                            <span class="badge text-bg-dark">{{ property.property_type }}</span>
-                        </div>
-                    </div>
-                    <div class="row g-3 mb-3 row-cols-1 row-cols-sm-2">
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Price</div>
-                                <div class="h4 fw-bold text-primary mb-0">${{ "%.0f"|format(property.price) }}/week</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Availability</div>
-                                <div class="fw-semibold text-dark mb-0">Available now</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Listed</div>
-                                <div class="fw-semibold text-dark mb-0">{{ property.created_at }}</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Bedrooms</div>
-                                <div class="fw-semibold text-dark mb-0">{{ property.bedrooms }}</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Bathrooms</div>
-                                <div class="fw-semibold text-dark mb-0">{{ property.bathrooms }}</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Car spaces</div>
-                                <div class="fw-semibold text-dark mb-0">Not listed</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="section-box p-3 mb-3">
-                        <div class="small text-muted mb-1">Occupancy</div>
-                        <div class="fw-semibold text-dark">{{ property.occupants }} occupants</div>
-                    </div>
-                    {% if session.get("user") and session.get("user").get("role") == "buyer" %}
-                    <div class="row g-3 mb-3">
-                        <div class="col-12 col-sm-6">
-                            <div class="section-box p-3 h-100">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="fw-semibold">Compatibility</span>
-                                    <span class="text-success fw-semibold">{{ property.compatibility|int }}%</span>
-                                </div>
-                                <div class="progress" style="height: 6px">
-                                    <div class="progress-bar bg-success"
-                                        style="--compatibility-width: {{ property.compatibility|int }}%; width: var(--compatibility-width);">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% if offer %}
-                        <div class="col-12 col-sm-6">
-                            <div class="section-box p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="fw-semibold">Your latest offer</span>
-                                    <span class="badge bg-warning text-dark text-uppercase">{{ offer.status }}</span>
-                                </div>
-                                <div class="fw-bold text-dark">${{ "%.2f"|format(offer.offered_price) }}</div>
-                            </div>
-                        </div>
+            <div class="property-summary-band">
+                <div>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <span class="badge text-bg-light">{{ property.property_type }}</span>
+                        <span class="badge bg-success-subtle text-success">Available now</span>
+                        {% if session.get("user") and session.get("user").get("role") == "buyer" %}
+                        <span class="badge bg-primary-subtle text-primary">{{ property.compatibility|int }}% match</span>
                         {% endif %}
                     </div>
-                    {% endif %}
-                    <div class="mt-4 p-3 section-box">
-                        <div class="d-grid gap-2 d-sm-flex">
-                            {% if session.get("user") and session.get("user").get("role") == "buyer" %}
-                            <button class="btn btn-primary py-2 rounded-pill fw-semibold flex-fill" type="button"
-                                data-bs-toggle="modal" data-bs-target="#enquiryModal">
-                                Send Enquiry
-                            </button>
-                            <button class="btn btn-outline-dark py-2 rounded-pill fw-semibold flex-fill" type="button"
-                                data-bs-toggle="modal" data-bs-target="#offerModal">
-                                Submit Offer
-                            </button>
-                            {% else %}
-                            <a href="{{ url_for('main.login') }}"
-                                class="btn btn-primary py-2 rounded-pill fw-semibold flex-fill">Login to Send Enquiry</a>
-                            {% endif %}
-                        </div>
+                    <h1 class="property-detail-title">{{ property.title }}</h1>
+                    <p class="property-detail-address mb-0">
+                        <i class="bi bi-geo-alt"></i>
+                        {{ property.suburb }}, {{ property.city }}, {{ property.postcode }}
+                    </p>
+                </div>
+                <div class="property-summary-actions">
+                    <div class="property-detail-price">${{ "%.0f"|format(property.price) }}<span>/week</span></div>
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-end">
+                        {% if session.get("user") and session.get("user").get("role") == "buyer" %}
+                        <button class="btn btn-primary rounded-pill px-4" type="button" data-bs-toggle="modal"
+                            data-bs-target="#enquiryModal">
+                            <i class="bi bi-envelope"></i>
+                            Enquire
+                        </button>
+                        <button class="btn btn-light rounded-pill px-4" type="button" data-bs-toggle="modal"
+                            data-bs-target="#offerModal">
+                            <i class="bi bi-cash-coin"></i>
+                            Offer
+                        </button>
+                        {%elif session.get("user") and session.get("user").get("role") == "seller" and session.get("user").get("id") == property.seller_id %}
+                        <a href="{{ url_for('main.edit_property', property_id=property.id) }}" class="btn btn-outline-dark rounded-pill px-4">
+                            <i class="bi bi-pencil-square"></i>
+                            Edit Listing
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('main.login') }}" class="btn btn-primary rounded-pill px-4">
+                            Login to Enquire
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+
+            <div class="property-feature-bar">
+                <span><i class="bi bi-door-open"></i> {{ property.bedrooms }} Beds</span>
+                <span><i class="bi bi-droplet"></i> {{ property.bathrooms }} Baths</span>
+                <span><i class="bi bi-people"></i> {{ property.occupants }} Occupants</span>
+                <span><i class="bi bi-house-door"></i> {{ property.property_type }}</span>
+                {% if property.host_preferences %}
+                {% for preference in property.host_preferences %}
+                <span><i class="bi bi-check-circle"></i> {{ preference }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+
+
+            <div class="row g-4 p-4 p-lg-5">
+                <div class="col-12">
+                    <section id="overview" class="property-detail-panel">
+                        <h2><i class="bi bi-house-check"></i> About This Property</h2>
+                        <p class="property-desc mb-0">{{ property.description }}</p>
+                    </section>
+                </div>
+
+                <div class="col-12">
+                    <section id="location" class="property-detail-panel">
+                        <h2><i class="bi bi-map"></i> Map</h2>
+                        {% if map_url %}
+                        <iframe src="{{ map_url }}" class="property-map-frame" loading="lazy" allowfullscreen
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        {% else %}
+                        <div class="property-map-placeholder">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <div>
+                                <strong>{{ property.suburb }}</strong>
+                                <span>{{ property.city }}, {{ property.postcode }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </section>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <section id="host" class="property-detail-panel mb-lg-0 h-100">
+                        <h2><i class="bi bi-person-vcard"></i> Host Profile</h2>
+                        <div class="property-host">
+                            <div class="property-host-avatar">
+                                {{ property.seller_firstname[0] }}{{ property.seller_lastname[0] }}
+                            </div>
+                            <div>
+                                <strong>{{ property.seller_firstname }} {{ property.seller_lastname }}</strong>
+                                <span>ShareSpace host</span>
+                            </div>
+                        </div>
+                        <div class="property-host-contact">
+                            <span><i class="bi bi-envelope"></i> {{ property.seller_email }}</span>
+                            <span><i class="bi bi-telephone"></i> {{ property.seller_phone }}</span>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <section id="documents" class="property-detail-panel mb-lg-0 h-100">
+                        <h2><i class="bi bi-file-earmark-text"></i> Property Documents</h2>
+                        <div class="property-document-list">
+                            {% for document in property.documents %}
+                            <div class="property-document">
+                                <div>
+                                    <strong>{{ document.split('/')[-1] }}</strong>
+                                    <span>Property document</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('static', filename=document) }}"
+                                        class="btn btn-outline-dark btn-sm rounded-pill" target="_blank">
+                                        View
+                                    </a>
+                                    <a href="{{ url_for('static', filename=document) }}"
+                                        class="btn btn-dark btn-sm rounded-pill" download>
+                                        Download
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if not property.documents %}
+                            <span class="text-muted">No property documents have been uploaded for this listing yet.</span>
+                            {% endif %}
+                        </div>
+                    </section>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
 </section>
+
 {% if session.get("user") and session.get("user").get("role") == "buyer" %}
+<div class="modal fade" id="bookmarkModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    {% if bookmark %}Update Bookmark{% else %}Bookmark Property{% endif %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('main.save_property_bookmark', property_id=property.id) }}">
+                <div class="modal-body">
+                    {{ bookmark_form.hidden_tag() }}
+                    {% if bookmark %}
+                    <div class="badge bg-success mb-3">Bookmarked</div>
+                    {% endif %}
+                    <div class="mb-3">
+                        {{ bookmark_form.note.label(class="form-label") }}
+                        {{ bookmark_form.note(class="form-control", rows="4", placeholder="Add an optional note about this property") }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    {% if bookmark %}
+                    <button type="submit"
+                        formaction="{{ url_for('main.remove_property_bookmark', property_id=property.id) }}"
+                        class="btn btn-outline-danger rounded-pill me-auto">
+                        Remove Bookmark
+                    </button>
+                    {% endif %}
+                    <button type="button" class="btn btn-outline-dark rounded-pill" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary rounded-pill fw-semibold">
+                        {% if bookmark %}Update Bookmark{% else %}Bookmark Property{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="enquiryModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

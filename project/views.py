@@ -417,6 +417,10 @@ def _property_details_context(property_id, enquiry_form=None, offer_form=None):
     if not property:
         abort(404)
 
+    map_url = None
+    if property.latitude is not None and property.longitude is not None:
+        map_url = f"https://www.google.com/maps?q={property.latitude},{property.longitude}&output=embed"
+
     enquiry_form = enquiry_form or EnquiryForm()
     offer_form = offer_form or OfferForm()
     bookmark_form = BookmarkForm()
@@ -424,7 +428,7 @@ def _property_details_context(property_id, enquiry_form=None, offer_form=None):
     user_preferences = []
     bookmark = None
     offer = None
-    document_links = []
+
 
     if session.get("logged_in") and session["user"]["role"] == "buyer":
         user_id = session["user"]["id"]
@@ -432,20 +436,12 @@ def _property_details_context(property_id, enquiry_form=None, offer_form=None):
         bookmark = get_bookmark(user_id, property_id)
         offer = get_offer(user_id, property_id)
         property.compatibility = calculate_compatibility(property.id, user_id)
+        if bookmark:
+            bookmark_form.note.data = bookmark['note']
         if offer:
             offer_form.offered_price.data = offer['offered_price']
 
-    if property.property_type in ("Shared Apartment", "Shared House", "Private Room"):
-        document_links = [
-            {"label": "Rental application checklist", "description": "Documents to prepare before applying."},
-            {"label": "Condition report", "description": "Useful for shared housing move-in checks."},
-        ]
-    else:
-        document_links = [
-            {"label": "Contract of sale", "description": "Review the standard contract before making an offer."},
-            {"label": "Seller disclosure", "description": "Check the vendor disclosure details for this property."},
-            {"label": "Appraisal and reports", "description": "Request supporting valuation or inspection documents."},
-        ]
+
 
     return render_template(
         'property_details.html',
@@ -457,7 +453,7 @@ def _property_details_context(property_id, enquiry_form=None, offer_form=None):
         offer=offer,
         preferences=preferences,
         user_preferences=user_preferences,
-        document_links=document_links,
+        map_url=map_url,
     )
 
 @bp.route('/property/<int:property_id>', methods=['GET', 'POST'])

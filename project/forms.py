@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms.fields import StringField, SelectField, SubmitField, PasswordField, TextAreaField, IntegerField, DecimalField
-from wtforms.validators import email, InputRequired, NumberRange
+from wtforms.validators import email, InputRequired, NumberRange, Optional
 
 class RegisterForm(FlaskForm):
     """Form for user registry."""
@@ -57,6 +57,16 @@ class PropertyForm(FlaskForm):
     bedrooms = IntegerField("Bedrooms", validators=[InputRequired()])
     bathrooms = IntegerField("Bathrooms", validators=[InputRequired()])
     occupants = IntegerField("Occupants", validators=[InputRequired()])
+    latitude = DecimalField(
+        "Latitude",
+        validators=[Optional(), NumberRange(min=-90, max=90, message="Latitude must be between -90 and 90.")],
+        places=8,
+    )
+    longitude = DecimalField(
+        "Longitude",
+        validators=[Optional(), NumberRange(min=-180, max=180, message="Longitude must be between -180 and 180.")],
+        places=8,
+    )
     image = StringField("Image path", validators=[InputRequired()])
     description = TextAreaField("Description", validators=[InputRequired()])
     submit = SubmitField("Save Listing")

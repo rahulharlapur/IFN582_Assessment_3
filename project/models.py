@@ -30,9 +30,17 @@ class Property:
     description: str
     created_at: datetime
 
+    seller_firstname: str = None
+    seller_lastname: str = None
+    seller_email: str = None
+    seller_phone: str = None
+    latitude: float = None
+    longitude: float = None
     compatibility: int = 0
     images: list = None
+    documents: list = None
     host_preferences: list = None
+
 
 
 @dataclass

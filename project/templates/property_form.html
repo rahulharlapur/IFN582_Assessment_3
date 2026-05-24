@@ -52,6 +52,14 @@
                                     {{ form.occupants.label(class="form-label") }}
                                     {{ form.occupants(class="form-control") }}
                                 </div>
+                                <div class="col-12 col-md-4">
+                                    {{ form.latitude.label(class="form-label") }}
+                                    {{ form.latitude(class="form-control", placeholder="-27.46980000") }}
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    {{ form.longitude.label(class="form-label") }}
+                                    {{ form.longitude(class="form-control", placeholder="153.02510000") }}
+                                </div>
                                 <div class="col-12 col-md-8">
                                     {{ form.image.label(class="form-label") }}
                                     {{ form.image(class="form-control") }}
