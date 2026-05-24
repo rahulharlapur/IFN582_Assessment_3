@@ -42,11 +42,7 @@
                                 <a class="nav-link text-black text-center" href="{{ url_for('main.bookmarks') }}">Bookmarks</a>
                             </li>
                             {% endif %}
-                            {% if user and (user.get("role") == "admin" or user.get("role") == "seller") %}
-                            <li class="nav-item ms-3 ms-lg-0">
-                                <a class="nav-link px-2 text-black text-center" href="{{ url_for('main.create_property_listing') }}">List
-                                    Property</a>
-                            </li>
+                            {% if user and user.get("role") == "seller" %}
                             <li class="nav-item ms-3 ms-lg-0">
                                 <a class="nav-link px-2 text-black text-center" href="{{ url_for('main.listings') }}">My
                                     Listings</a>

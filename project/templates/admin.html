@@ -141,40 +141,6 @@ Admin Dashboard
                 </div>
             </div>
         </div>
-
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <h4 class="card-title mb-3">Recent Enquiries</h4>
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead>
-                            <tr>
-                                <th>Property</th>
-                                <th>Buyer</th>
-                                <th>Subject</th>
-                                <th>Message</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for enquiry in interactions %}
-                            <tr>
-                                <td>{{ enquiry.property_title }}</td>
-                                <td>{{ enquiry.buyer_firstname }} {{ enquiry.buyer_lastname }}</td>
-                                <td>{{ enquiry.subject }}</td>
-                                <td class="text-muted">{{ enquiry.message[:80] }}{% if enquiry.message|length > 80 %}...{% endif %}</td>
-                                <td>{{ enquiry.created_at }}</td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="5" class="text-center text-muted py-4">No enquiries yet.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
 {% endblock %}
