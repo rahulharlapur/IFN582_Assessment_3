@@ -295,20 +295,4 @@ Property Details
     </div>
 </div>
 {% endif %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const enquiryHasErrors = {{ 'true' if enquiry_form.errors else 'false' }};
-        const offerHasErrors = {{ 'true' if offer_form.errors else 'false' }};
-
-        if (enquiryHasErrors) {
-            const enquiryModal = new bootstrap.Modal(document.getElementById('enquiryModal'));
-            enquiryModal.show();
-        }
-
-        if (offerHasErrors) {
-            const offerModal = new bootstrap.Modal(document.getElementById('offerModal'));
-            offerModal.show();
-        }
-    });
-</script>
 {% endblock %}
