@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, session, flash,redirect, url_for
-from .db import get_properties, search_properties , create_user, user_exists, check_for_user,get_preferences,calculate_compatibility,save_user_preferences,get_user_preferences
-from .forms import SearchForm, RegisterForm, LoginForm
+from flask import Blueprint, render_template, request, session, flash,redirect, url_for, abort
+from .db import get_properties, search_properties , create_user, user_exists, check_for_user,get_preferences,calculate_compatibility,save_user_preferences,get_user_preferences, get_property_details, create_enquiry
+from .forms import SearchForm, RegisterForm, LoginForm, EnquiryForm
 from hashlib import sha256
 
 bp = Blueprint('main', __name__)
@@ -114,3 +114,36 @@ def save_preferences():
     save_user_preferences(user_id, selected_preferences)
     flash("Preferences updated successfully!", "success")
     return redirect(url_for('main.index'))
+
+@bp.route('/property/<int:property_id>', methods=['GET', 'POST'])
+def property_details(property_id):
+    property = get_property_details(property_id)
+
+    if not property:
+        abort(404)
+
+    enquiry_form = EnquiryForm()
+    preferences = get_preferences()
+    user_preferences = []
+
+    if session.get("logged_in") and session["user"]["role"] == "buyer":
+        user_preferences = get_user_preferences(session["user"]["id"])
+        property.compatibility = calculate_compatibility(
+            property.id,
+            session["user"]["id"]
+        )
+        if request.method == 'POST' and enquiry_form.validate_on_submit():
+            create_enquiry(property.id, session["user"]["id"], enquiry_form)
+            flash("Enquiry sent successfully!", "success")
+            return redirect(url_for('main.property_details', property_id=property.id))
+    elif request.method == 'POST':
+        flash("Please log in as a tenant to send an enquiry.", "warning")
+        return redirect(url_for('main.login'))
+
+    return render_template(
+        'property_details.html',
+        property=property,
+        enquiry_form=enquiry_form,
+        preferences=preferences,
+        user_preferences=user_preferences
+    )

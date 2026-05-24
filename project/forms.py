@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, SelectField, SubmitField, PasswordField
+from wtforms.fields import StringField, SelectField, SubmitField, PasswordField, TextAreaField
 from wtforms.validators import email,InputRequired
 
 class RegisterForm(FlaskForm):
@@ -23,6 +23,12 @@ class LoginForm(FlaskForm):
     email = StringField("Email", validators = [InputRequired(), email()])
     password = PasswordField("Password", validators = [InputRequired()])
     submit = SubmitField("Login")
+
+class EnquiryForm(FlaskForm):
+    """Form for property enquiries."""
+    subject = StringField("Subject", validators=[InputRequired()])
+    message = TextAreaField("Message", validators=[InputRequired()])
+    submit = SubmitField("Send Enquiry")
 
 
 class SearchForm(FlaskForm):
@@ -73,4 +79,3 @@ class SearchForm(FlaskForm):
 )
 
     submit = SubmitField("Apply")
-
