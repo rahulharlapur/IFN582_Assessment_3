@@ -217,3 +217,25 @@ VALUES
 (1, 3),
 (1, 4),
 (1, 5);
+
+
+CREATE TABLE users (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    firstname VARCHAR(100) NOT NULL,
+
+    lastname VARCHAR(100) NOT NULL,
+
+    email VARCHAR(255) NOT NULL UNIQUE,
+
+    password VARCHAR(255) NOT NULL,
+
+    phone VARCHAR(20) NOT NULL,
+
+    role ENUM('admin', 'seller', 'buyer') NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
+
