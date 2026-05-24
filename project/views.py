@@ -28,23 +28,28 @@ def index():
     return render_template('home.html', form=form, properties=properties, preferences=preferences, user_preferences=user_preferences)
 
 
-
 @bp.route('/search', methods=['GET', 'POST'])
 def search():
     form = SearchForm()
-    selected_preferences = request.form.getlist('preferences')
     user_preferences = []
-    if form.validate_on_submit():
-        properties = search_properties(form, selected_preferences)
-    else:
-        properties = get_properties()
+
     if session.get("logged_in") and session["user"]["role"] == "buyer":
         form.sort_by.choices.append(("compatibility", "Sort by - Compatibility"))
         user_preferences = get_user_preferences(session["user"]["id"])
+
+    selected_preferences = request.form.getlist('preferences')
+
+    if form.validate_on_submit():
+        properties = search_properties(form,selected_preferences)
+    else:
+        properties = get_properties()
+
+    if session.get("logged_in") and session["user"]["role"] == "buyer":
         for property in properties:
             property.compatibility = calculate_compatibility(property.id,session["user"]["id"])
         if form.sort_by.data == "compatibility":
             properties.sort(key=lambda x: x.compatibility,reverse=True)
+
     preferences = get_preferences()
     return render_template(
         'home.html',
