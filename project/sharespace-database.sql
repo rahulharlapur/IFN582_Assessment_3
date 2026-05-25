@@ -44,6 +44,10 @@ CREATE TABLE properties (
 
     postcode VARCHAR(10) NOT NULL,
 
+    latitude DECIMAL(10,8),
+
+    longitude DECIMAL(11,8),
+
     bedrooms INT NOT NULL,
 
     bathrooms INT NOT NULL,
@@ -238,6 +242,8 @@ INSERT INTO properties
     suburb,
     city,
     postcode,
+    latitude,
+    longitude,
     bedrooms,
     bathrooms,
     occupants,
@@ -256,6 +262,8 @@ VALUES
     'Brisbane CBD',
     'Brisbane',
     '4000',
+    -27.47050000,
+    153.02600000,
     2,
     1,
     2,
@@ -272,6 +280,8 @@ VALUES
     'South Brisbane',
     'Brisbane',
     '4101',
+    -27.47860000,
+    153.02030000,
     2,
     2,
     2,
@@ -288,6 +298,8 @@ VALUES
     'New Farm',
     'Brisbane',
     '4005',
+    -27.46790000,
+    153.04690000,
     2,
     2,
     2,
@@ -304,6 +316,8 @@ VALUES
     'Toowong',
     'Brisbane',
     '4066',
+    -27.48540000,
+    152.99200000,
     4,
     2,
     4,
@@ -320,6 +334,8 @@ VALUES
     'Woolloongabba',
     'Brisbane',
     '4102',
+    -27.49580000,
+    153.03660000,
     1,
     1,
     1,
@@ -336,6 +352,8 @@ VALUES
     'West End',
     'Brisbane',
     '4101',
+    -27.48150000,
+    153.01210000,
     2,
     1,
     2,
@@ -352,6 +370,8 @@ VALUES
     'St Lucia',
     'Brisbane',
     '4067',
+    -27.49750000,
+    153.01370000,
     3,
     2,
     3,
@@ -368,6 +388,8 @@ VALUES
     'Indooroopilly',
     'Brisbane',
     '4068',
+    -27.49960000,
+    152.97380000,
     4,
     2,
     4,
@@ -384,6 +406,8 @@ VALUES
     'South Bank',
     'Brisbane',
     '4101',
+    -27.47650000,
+    153.02190000,
     1,
     1,
     1,
@@ -400,6 +424,8 @@ VALUES
     'Annerley',
     'Brisbane',
     '4103',
+    -27.51210000,
+    153.03220000,
     1,
     1,
     1,
@@ -416,6 +442,8 @@ VALUES
     'Kelvin Grove',
     'Brisbane',
     '4059',
+    -27.45330000,
+    153.01460000,
     3,
     2,
     3,
@@ -432,6 +460,8 @@ VALUES
     'Highgate Hill',
     'Brisbane',
     '4101',
+    -27.48850000,
+    153.01880000,
     1,
     1,
     1,
@@ -448,6 +478,8 @@ VALUES
     'Fortitude Valley',
     'Brisbane',
     '4006',
+    -27.45800000,
+    153.03460000,
     1,
     1,
     1,
@@ -464,6 +496,8 @@ VALUES
     'Chermside',
     'Brisbane',
     '4032',
+    -27.38590000,
+    153.03210000,
     4,
     2,
     4,
@@ -480,6 +514,8 @@ VALUES
     'Fortitude Valley',
     'Brisbane',
     '4006',
+    -27.45800000,
+    153.03460000,
     2,
     1,
     2,
@@ -581,6 +617,23 @@ CREATE TABLE property_images (
 );
 
 
+CREATE TABLE property_documents (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    property_id INT NOT NULL,
+
+    file_path VARCHAR(255) NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (property_id)
+        REFERENCES properties(id)
+        ON DELETE CASCADE
+
+);
+
+
 INSERT INTO property_images
 (property_id, image, display_order)
 VALUES
@@ -602,6 +655,27 @@ VALUES
 
 (6, 'img/pexels-artbovich-7195864.jpg', 1),
 (6, 'img/pexels-iris-35972950.jpg', 2);
+
+
+INSERT INTO property_documents
+(property_id, file_path)
+VALUES
+(1, 'documents/rental-application-checklist.txt'),
+(1, 'documents/condition-report.txt'),
+(2, 'documents/rental-application-checklist.txt'),
+(3, 'documents/condition-report.txt'),
+(4, 'documents/inspection-checklist.txt'),
+(5, 'documents/rental-application-checklist.txt'),
+(6, 'documents/condition-report.txt'),
+(7, 'documents/inspection-checklist.txt'),
+(8, 'documents/rental-application-checklist.txt'),
+(9, 'documents/condition-report.txt'),
+(10, 'documents/inspection-checklist.txt'),
+(11, 'documents/rental-application-checklist.txt'),
+(12, 'documents/condition-report.txt'),
+(13, 'documents/inspection-checklist.txt'),
+(14, 'documents/rental-application-checklist.txt'),
+(15, 'documents/condition-report.txt');
 
 
 INSERT INTO enquiries

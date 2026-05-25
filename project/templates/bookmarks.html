@@ -5,13 +5,19 @@ Bookmarked Properties
 {% endblock %}
 
 {% block content %}
+<section class="page-hero">
+    <img src="{{ url_for('static', filename='img/pexels-cottonbro-4781415.jpg') }}" alt="Shared living space"
+        class="page-hero-img">
+    <div class="page-hero-content">
+        <div class="container">
+            <h1 class="fw-bold">Bookmarked Properties</h1>
+            <p class="mb-0">Only you can see and manage this list.</p>
+        </div>
+    </div>
+</section>
+
 <section class="py-5">
     <div class="container">
-        <div class="mb-4">
-            <h1 class="fw-bold">Saved / Bookmarked Properties</h1>
-            <p class="text-muted mb-0">Only you can see and manage this list.</p>
-        </div>
-
         {% if bookmarks %}
         <div class="row g-4">
             {% for bookmark in bookmarks %}

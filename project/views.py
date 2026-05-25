@@ -180,21 +180,6 @@ def dashboard():
     )
 
 
-@bp.route('/enquiries', methods=['GET'])
-def enquiries():
-    access = require_login('buyer')
-    if access:
-        return access
-
-    user_id = session['user']['id']
-    user_preferences = get_user_preferences(session["user"]["id"])
-    return render_template(
-        'enquiries.html',
-        enquiries=get_user_enquiries(user_id),
-        user_preferences=user_preferences,
-    )
-
-
 @bp.route('/property/<int:property_id>/bookmark', methods=['POST'])
 def save_property_bookmark(property_id):
     access = require_login('buyer')
@@ -275,17 +260,15 @@ def remove_admin_user(user_id):
 
 @bp.route('/listings', methods=['GET'])
 def listings():
-    access = require_login('admin', 'seller')
+    access = require_login('seller')
     if access:
         return access
 
-    owner_id = None if session['user']['role'] == 'admin' else session['user']['id']
     return render_template(
         'listings.html',
-        properties=get_management_properties(owner_id),
-        interactions=get_property_interactions(owner_id),
-        offers=get_property_offers(owner_id),
-        role=session['user']['role']
+        properties=get_management_properties(session['user']['id']),
+        interactions=get_property_interactions(session['user']['id']),
+        offers=get_property_offers(session['user']['id'])
     )
 
 
@@ -300,17 +283,16 @@ def _can_manage_offer(offer_id):
     if not offer:
         abort(404)
 
-    if session['user']['role'] != 'admin':
-        property = get_property_details(offer['property_id'])
-        if not property or property.seller_id != session['user']['id']:
-            abort(403)
+    property = get_property_details(offer['property_id'])
+    if not property or property.seller_id != session['user']['id']:
+        abort(403)
 
     return offer
 
 
 @bp.route('/offers/<int:offer_id>/accept', methods=['POST'])
 def accept_offer(offer_id):
-    access = require_login('admin', 'seller')
+    access = require_login('seller')
     if access:
         return access
 
@@ -322,7 +304,7 @@ def accept_offer(offer_id):
 
 @bp.route('/offers/<int:offer_id>/reject', methods=['POST'])
 def reject_offer(offer_id):
-    access = require_login('admin', 'seller')
+    access = require_login('seller')
     if access:
         return access
 
@@ -342,13 +324,16 @@ def create_property_listing():
     if request.method == 'POST' and form.validate_on_submit():
         create_property(form, session['user']['id'])
         flash("Property listing created successfully!", "success")
+        if session['user']['role'] == 'admin':
+            return redirect(url_for('main.admin_dashboard'))
         return redirect(url_for('main.listings'))
 
     return render_template(
         'property_form.html',
         form=form,
         heading='Create Listing',
-        submit_label='Create Listing'
+        submit_label='Create Listing',
+        cancel_url=url_for('main.admin_dashboard') if session['user']['role'] == 'admin' else url_for('main.listings')
     )
 
 
@@ -377,7 +362,8 @@ def edit_property_listing(property_id):
         'property_form.html',
         form=form,
         heading='Edit Listing',
-        submit_label='Update Listing'
+        submit_label='Update Listing',
+        cancel_url=url_for('main.admin_dashboard') if session['user']['role'] == 'admin' else url_for('main.listings')
     )
 
 
@@ -402,20 +388,25 @@ def remove_property_listing(property_id):
 
 @bp.route('/save-preferences', methods=['POST'])
 def save_preferences():
+    access = require_login('buyer')
+    if access:
+        return access
 
     user_id = session['user']['id']
     selected_preferences = request.form.getlist('preferences')
     save_user_preferences(user_id, selected_preferences)
     flash("Preferences updated successfully!", "success")
-    if session.get("logged_in") and session.get("user", {}).get("role") == "buyer":
-        return redirect(request.referrer or url_for('main.dashboard'))
-    return redirect(url_for('main.index'))
+    return redirect(request.referrer or url_for('main.dashboard'))
 
 
 def _property_details_context(property_id, enquiry_form=None, offer_form=None):
     property = get_property_details(property_id)
     if not property:
         abort(404)
+
+    map_url = None
+    if property.latitude is not None and property.longitude is not None:
+        map_url = f"https://www.google.com/maps?q={property.latitude},{property.longitude}&output=embed"
 
     enquiry_form = enquiry_form or EnquiryForm()
     offer_form = offer_form or OfferForm()
@@ -424,7 +415,7 @@ def _property_details_context(property_id, enquiry_form=None, offer_form=None):
     user_preferences = []
     bookmark = None
     offer = None
-    document_links = []
+
 
     if session.get("logged_in") and session["user"]["role"] == "buyer":
         user_id = session["user"]["id"]
@@ -432,20 +423,12 @@ def _property_details_context(property_id, enquiry_form=None, offer_form=None):
         bookmark = get_bookmark(user_id, property_id)
         offer = get_offer(user_id, property_id)
         property.compatibility = calculate_compatibility(property.id, user_id)
+        if bookmark:
+            bookmark_form.note.data = bookmark['note']
         if offer:
             offer_form.offered_price.data = offer['offered_price']
 
-    if property.property_type in ("Shared Apartment", "Shared House", "Private Room"):
-        document_links = [
-            {"label": "Rental application checklist", "description": "Documents to prepare before applying."},
-            {"label": "Condition report", "description": "Useful for shared housing move-in checks."},
-        ]
-    else:
-        document_links = [
-            {"label": "Contract of sale", "description": "Review the standard contract before making an offer."},
-            {"label": "Seller disclosure", "description": "Check the vendor disclosure details for this property."},
-            {"label": "Appraisal and reports", "description": "Request supporting valuation or inspection documents."},
-        ]
+
 
     return render_template(
         'property_details.html',
@@ -457,7 +440,7 @@ def _property_details_context(property_id, enquiry_form=None, offer_form=None):
         offer=offer,
         preferences=preferences,
         user_preferences=user_preferences,
-        document_links=document_links,
+        map_url=map_url,
     )
 
 @bp.route('/property/<int:property_id>', methods=['GET', 'POST'])
