@@ -1,20 +1,49 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Listings
+My Dashboard
 {% endblock %}
 
 {% block content %}
+<section class="page-hero">
+    <img src="{{ url_for('static', filename='img/pexels-cottonbro-4781415.jpg') }}" alt="Shared living space"
+        class="page-hero-img">
+    <div class="page-hero-content">
+        <div class="container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+                <div>
+                    <h1 class="fw-bold">My Dashboard</h1>
+                    <p class="mb-0"> Manage your property listings, enquiries, and offer updates in one place.</p>
+                </div>
+                <a href="{{ url_for('main.create_property_listing') }}" class="btn btn-light rounded-pill px-4">Create Listing</a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-12 col-md-4">
+                    <div class="page-stat-card h-100">
+                        <p class="mb-1">My listings</p>
+                        <h3 class="fw-bold mb-0">{{ properties|length }}</h3>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="page-stat-card h-100">
+                        <p class="mb-1">Enquiries</p>
+                        <h3 class="fw-bold mb-0">{{ interactions|length }}</h3>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="page-stat-card h-100">
+                        <p class="mb-1">Offers received</p>
+                        <h3 class="fw-bold mb-0">{{ offers|length }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="py-5">
     <div class="container">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
-            <div>
-                <h1 class="fw-bold">{% if role == 'admin' %}All Listings{% else %}My Listings{% endif %}</h1>
-                <p class="text-muted mb-0">Create, edit, and remove listings you are allowed to manage.</p>
-            </div>
-            <a href="{{ url_for('main.create_property_listing') }}" class="btn btn-dark rounded-pill px-4">Create Listing</a>
-        </div>
-
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body p-4">
                 <div class="table-responsive">
@@ -22,9 +51,6 @@ Listings
                         <thead>
                             <tr>
                                 <th>Listing</th>
-                                {% if role == 'admin' %}
-                                <th>Seller</th>
-                                {% endif %}
                                 <th>Price</th>
                                 <th>Location</th>
                                 <th>Enquiries</th>
@@ -35,9 +61,6 @@ Listings
                             {% for property in properties %}
                             <tr>
                                 <td>{{ property.title }}</td>
-                                {% if role == 'admin' %}
-                                <td>{{ property.seller_firstname }} {{ property.seller_lastname }}</td>
-                                {% endif %}
                                 <td>${{ property.price }}/week</td>
                                 <td>{{ property.suburb }}, {{ property.city }}</td>
                                 <td>{{ property.enquiry_count }}</td>
@@ -50,7 +73,7 @@ Listings
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="{{ 6 if role == 'admin' else 5 }}" class="text-center text-muted py-4">No listings available.</td>
+                                <td colspan="5" class="text-center text-muted py-4">No listings available.</td>
                             </tr>
                             {% endfor %}
                         </tbody>

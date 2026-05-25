@@ -47,7 +47,7 @@
                             {% if user and user.get("role") == "seller" %}
                             <li class="nav-item ms-3 ms-lg-0">
                                 <a class="nav-link px-2 text-black text-center" href="{{ url_for('main.listings') }}">My
-                                    Listings</a>
+                                    Dashboard</a>
                             </li>
                             {% endif %}
                             {% if user and user.get("role") == "admin" %}
