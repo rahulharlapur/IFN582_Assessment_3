@@ -44,9 +44,9 @@ CREATE TABLE properties (
 
     postcode VARCHAR(10) NOT NULL,
 
-    latitude DECIMAL(10,8),
+    latitude DECIMAL(10,8) NOT NULL,
 
-    longitude DECIMAL(11,8),
+    longitude DECIMAL(11,8) NOT NULL,
 
     bedrooms INT NOT NULL,
 
@@ -56,7 +56,7 @@ CREATE TABLE properties (
 
     compatibility_score DECIMAL(3,1) DEFAULT 0,
 
-    image VARCHAR(255),
+    status ENUM('available', 'unavailable') DEFAULT 'available',
 
     description TEXT,
 
@@ -127,6 +127,8 @@ CREATE TABLE enquiries (
     subject VARCHAR(255) NOT NULL,
 
     message TEXT NOT NULL,
+
+    status ENUM('new', 'responded', 'closed') DEFAULT 'new',
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -248,7 +250,7 @@ INSERT INTO properties
     bathrooms,
     occupants,
     compatibility_score,
-    image,
+    status,
     description
 )
 
@@ -268,7 +270,7 @@ VALUES
     1,
     2,
     4.5,
-    'img/pexels-artbovich-7019026.jpg',
+    'available',
     'Modern shared apartment located close to public transport and universities.'
 ),
 
@@ -286,7 +288,7 @@ VALUES
     2,
     2,
     4.7,
-    'img/pexels-pixabay-271618.jpg',
+    'available',
     'Spacious apartment with natural lighting and furnished shared spaces.'
 ),
 
@@ -304,7 +306,7 @@ VALUES
     2,
     2,
     4.9,
-    'img/pexels-fotoaibe-1571453.jpg',
+    'available',
     'Premium entire apartment overlooking the Brisbane River.'
 ),
 
@@ -322,7 +324,7 @@ VALUES
     2,
     4,
     4.6,
-    'img/pexels-john-tekeridis-21837-1428348.jpg',
+    'available',
     'Peaceful shared home suitable for students and professionals.'
 ),
 
@@ -340,7 +342,7 @@ VALUES
     1,
     1,
     4.2,
-    'img/pexels-andrew-3201763.jpg',
+    'available',
     'Affordable furnished private room near public transport.'
 ),
 
@@ -358,7 +360,7 @@ VALUES
     1,
     2,
     4.8,
-    'img/pexels-artbovich-7195864.jpg',
+    'available',
     'Well-maintained apartment with peaceful shared living spaces.'
 ),
 
@@ -376,7 +378,7 @@ VALUES
     2,
     3,
     4.6,
-    'img/pexels-pixabay-271618.jpg',
+    'available',
     'Shared apartment located close to UQ campus.'
 ),
 
@@ -394,7 +396,7 @@ VALUES
     2,
     4,
     4.4,
-    'img/pexels-artbovich-7019026.jpg',
+    'unavailable',
     'Large shared house with backyard and study area.'
 ),
 
@@ -412,7 +414,7 @@ VALUES
     1,
     1,
     4.8,
-    'img/pexels-pixabay-271618.jpg',
+    'available',
     'Modern studio apartment with gym and pool access.'
 ),
 
@@ -430,7 +432,7 @@ VALUES
     1,
     1,
     4.1,
-    'img/pexels-fotoaibe-1571453.jpg',
+    'available',
     'Budget-friendly private room in quiet neighbourhood.'
 ),
 
@@ -448,7 +450,7 @@ VALUES
     2,
     3,
     4.7,
-    'img/pexels-pixabay-271618.jpg',
+    'available',
     'Perfect shared apartment for social student living.'
 ),
 
@@ -466,7 +468,7 @@ VALUES
     1,
     1,
     4.3,
-    'img/pexels-fotoaibe-1571453.jpg',
+    'available',
     'Fully furnished private room close to Brisbane CBD.'
 ),
 
@@ -484,7 +486,7 @@ VALUES
     1,
     1,
     4.9,
-    'img/pexels-pixabay-271618.jpg',
+    'unavailable',
     'Luxury studio apartment with premium amenities.'
 ),
 
@@ -502,7 +504,7 @@ VALUES
     2,
     4,
     4.5,
-    'img/pexels-fotoaibe-1571453.jpg',
+    'available',
     'Large shared house with parking and outdoor area.'
 ),
 
@@ -520,7 +522,7 @@ VALUES
     1,
     2,
     4.2,
-    'img/pexels-andrew-3201763.jpg',
+    'available',
     'Shared apartment located near restaurants and nightlife.'
 );
 
@@ -654,7 +656,17 @@ VALUES
 (5, 'img/pexels-thomas-plets-1139798-5403840.jpg', 2),
 
 (6, 'img/pexels-artbovich-7195864.jpg', 1),
-(6, 'img/pexels-iris-35972950.jpg', 2);
+(6, 'img/pexels-iris-35972950.jpg', 2),
+
+(7, 'img/pexels-pixabay-271618.jpg', 1),
+(8, 'img/pexels-artbovich-7019026.jpg', 1),
+(9, 'img/pexels-pixabay-271618.jpg', 1),
+(10, 'img/pexels-fotoaibe-1571453.jpg', 1),
+(11, 'img/pexels-pixabay-271618.jpg', 1),
+(12, 'img/pexels-fotoaibe-1571453.jpg', 1),
+(13, 'img/pexels-pixabay-271618.jpg', 1),
+(14, 'img/pexels-fotoaibe-1571453.jpg', 1),
+(15, 'img/pexels-andrew-3201763.jpg', 1);
 
 
 INSERT INTO property_documents
@@ -663,6 +675,9 @@ VALUES
 (1, 'documents/rental-application-checklist.txt'),
 (1, 'documents/condition-report.txt'),
 (2, 'documents/rental-application-checklist.txt'),
+(2, 'documents/condition-report.txt'),
+(2, 'documents/inspection-checklist.txt'),
+(2, 'documents/rental-agreement-guide.txt'),
 (3, 'documents/condition-report.txt'),
 (4, 'documents/inspection-checklist.txt'),
 (5, 'documents/rental-application-checklist.txt'),
@@ -679,16 +694,16 @@ VALUES
 
 
 INSERT INTO enquiries
-(buyer_id, property_id, subject, message)
+(buyer_id, property_id, subject, message, status)
 
 VALUES
 
-(5, 1, 'Room availability', 'Is the room still available?'),
+(5, 1, 'Room availability', 'Is the room still available?', 'new'),
 
-(5, 3, 'Inspection request', 'Can I schedule an inspection this weekend?'),
+(5, 3, 'Inspection request', 'Can I schedule an inspection this weekend?', 'responded'),
 
-(6, 8, 'Utilities question', 'Are utilities included in rent?'),
+(6, 8, 'Utilities question', 'Are utilities included in rent?', 'closed'),
 
-(6, 11, 'Parking question', 'Is parking available nearby?'),
+(6, 11, 'Parking question', 'Is parking available nearby?', 'new'),
 
-(5, 15, 'Pet policy', 'Are pets allowed in this apartment?');
+(5, 15, 'Pet policy', 'Are pets allowed in this apartment?', 'responded');

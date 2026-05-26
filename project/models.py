@@ -26,7 +26,8 @@ class Property:
     bathrooms: int
     occupants: int
     seller_id: int
-    image: str
+    cover_image: str
+    status: str
     description: str
     created_at: datetime
 

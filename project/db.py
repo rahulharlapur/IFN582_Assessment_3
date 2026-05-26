@@ -14,6 +14,39 @@ FALLBACK_PROPERTY_DOCUMENTS = [
     'documents/inspection-checklist.txt',
 ]
 
+ENQUIRY_STATUSES = {'new', 'responded', 'closed'}
+OFFER_STATUSES = {'pending', 'accepted', 'rejected'}
+
+
+def _ensure_fallback_property_assets(cur, property_id):
+    cur.execute("""
+        SELECT COUNT(*) AS total
+        FROM property_images
+        WHERE property_id = %s
+    """, (property_id,))
+    image_count = cur.fetchone()['total']
+
+    if image_count == 0:
+        for display_order, image in enumerate(FALLBACK_PROPERTY_IMAGES, start=1):
+            cur.execute("""
+                INSERT INTO property_images (property_id, image, display_order)
+                VALUES (%s, %s, %s)
+            """, (property_id, image, display_order))
+
+    cur.execute("""
+        SELECT COUNT(*) AS total
+        FROM property_documents
+        WHERE property_id = %s
+    """, (property_id,))
+    document_count = cur.fetchone()['total']
+
+    if document_count == 0:
+        for file_path in FALLBACK_PROPERTY_DOCUMENTS:
+            cur.execute("""
+                INSERT INTO property_documents (property_id, file_path)
+                VALUES (%s, %s)
+            """, (property_id, file_path))
+
 
 def create_user(form):
     cur = mysql.connection.cursor()
@@ -93,7 +126,22 @@ def user_exists(email):
 
 def get_properties():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM properties ORDER BY created_at DESC")
+    cur.execute("""
+        SELECT
+            p.*,
+            pi.image AS cover_image
+        FROM properties p
+        LEFT JOIN property_images pi
+            ON pi.id = (
+                SELECT pi2.id
+                FROM property_images pi2
+                WHERE pi2.property_id = p.id
+                ORDER BY pi2.display_order ASC, pi2.id ASC
+                LIMIT 1
+            )
+        WHERE p.status = 'available'
+        ORDER BY p.created_at DESC
+    """)
     properties = cur.fetchall()
     cur.close()
     return [
@@ -109,7 +157,8 @@ def get_properties():
             row['bathrooms'],
             row['occupants'],
             row['seller_id'],
-            row['image'],
+            row['cover_image'],
+            row['status'],
             row['description'],
             row['created_at']
         )
@@ -133,7 +182,8 @@ def get_management_properties(owner_id=None):
             p.bedrooms,
             p.bathrooms,
             p.occupants,
-            p.image,
+            p.status,
+            pi.image AS cover_image,
             p.description,
             p.created_at,
             u.firstname AS seller_firstname,
@@ -146,6 +196,14 @@ def get_management_properties(owner_id=None):
             FROM enquiries
             GROUP BY property_id
         ) ec ON p.id = ec.property_id
+        LEFT JOIN property_images pi
+            ON pi.id = (
+                SELECT pi2.id
+                FROM property_images pi2
+                WHERE pi2.property_id = p.id
+                ORDER BY pi2.display_order ASC, pi2.id ASC
+                LIMIT 1
+            )
     """
     params = []
 
@@ -169,8 +227,10 @@ def get_property_interactions(owner_id=None):
             e.property_id,
             e.subject,
             e.message,
+            e.status,
             e.created_at,
             p.title AS property_title,
+            p.seller_id,
             u.firstname AS buyer_firstname,
             u.lastname AS buyer_lastname,
             u.email AS buyer_email
@@ -201,6 +261,7 @@ def get_user_enquiries(user_id):
             e.property_id,
             e.subject,
             e.message,
+            e.status,
             e.created_at,
             p.title AS property_title,
             p.property_type,
@@ -208,12 +269,20 @@ def get_user_enquiries(user_id):
             p.suburb,
             p.city,
             p.postcode,
-            p.image,
+            pi.image AS cover_image,
             u.firstname AS seller_firstname,
             u.lastname AS seller_lastname
         FROM enquiries e
         JOIN properties p ON e.property_id = p.id
         JOIN users u ON p.seller_id = u.id
+        LEFT JOIN property_images pi
+            ON pi.id = (
+                SELECT pi2.id
+                FROM property_images pi2
+                WHERE pi2.property_id = p.id
+                ORDER BY pi2.display_order ASC, pi2.id ASC
+                LIMIT 1
+            )
         WHERE e.buyer_id = %s
         ORDER BY e.created_at DESC
     """, (user_id,))
@@ -237,12 +306,20 @@ def get_user_offers(user_id):
             p.suburb,
             p.city,
             p.postcode,
-            p.image,
+            pi.image AS cover_image,
             u.firstname AS seller_firstname,
             u.lastname AS seller_lastname
         FROM offers o
         JOIN properties p ON o.property_id = p.id
         JOIN users u ON p.seller_id = u.id
+        LEFT JOIN property_images pi
+            ON pi.id = (
+                SELECT pi2.id
+                FROM property_images pi2
+                WHERE pi2.property_id = p.id
+                ORDER BY pi2.display_order ASC, pi2.id ASC
+                LIMIT 1
+            )
         WHERE o.buyer_id = %s
         ORDER BY o.created_at DESC
     """, (user_id,))
@@ -294,13 +371,15 @@ def create_property(form, seller_id):
             suburb,
             city,
             postcode,
+            latitude,
+            longitude,
             bedrooms,
             bathrooms,
             occupants,
-            image,
+            status,
             description
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """, (
         seller_id,
         form.title.data,
@@ -309,12 +388,18 @@ def create_property(form, seller_id):
         form.suburb.data,
         form.city.data,
         form.postcode.data,
+        form.latitude.data,
+        form.longitude.data,
         form.bedrooms.data,
         form.bathrooms.data,
         form.occupants.data,
-        form.image.data,
+        form.status.data,
         form.description.data,
     ))
+
+    property_id = cur.lastrowid
+    _ensure_fallback_property_assets(cur, property_id)
+
     mysql.connection.commit()
     cur.close()
 
@@ -329,10 +414,12 @@ def update_property(property_id, form):
             suburb = %s,
             city = %s,
             postcode = %s,
+            latitude = %s,
+            longitude = %s,
             bedrooms = %s,
             bathrooms = %s,
             occupants = %s,
-            image = %s,
+            status = %s,
             description = %s
         WHERE id = %s
     """, (
@@ -342,13 +429,18 @@ def update_property(property_id, form):
         form.suburb.data,
         form.city.data,
         form.postcode.data,
+        form.latitude.data,
+        form.longitude.data,
         form.bedrooms.data,
         form.bathrooms.data,
         form.occupants.data,
-        form.image.data,
+        form.status.data,
         form.description.data,
         property_id,
     ))
+
+    _ensure_fallback_property_assets(cur, property_id)
+
     mysql.connection.commit()
     cur.close()
 
@@ -385,11 +477,11 @@ def get_property_details(property_id):
             p.bathrooms,
             p.occupants,
             p.seller_id,
+            p.status,
             u.firstname AS seller_firstname,
             u.lastname AS seller_lastname,
             u.email AS seller_email,
             u.phone AS seller_phone,
-            p.image,
             p.description,
             p.created_at,
             pi.image AS property_image,
@@ -430,7 +522,8 @@ def get_property_details(property_id):
         first_row['bathrooms'],
         first_row['occupants'],
         first_row['seller_id'],
-        first_row['image'],
+        first_row['property_image'],
+        first_row['status'],
         first_row['description'],
         first_row['created_at']
     )
@@ -462,15 +555,29 @@ def get_property_details(property_id):
     return property
 
 def search_properties(form, selected_preferences=None):
-    query = "SELECT * FROM properties WHERE 1=1"
+    query = """
+        SELECT
+            p.*,
+            pi.image AS cover_image
+        FROM properties p
+        LEFT JOIN property_images pi
+            ON pi.id = (
+                SELECT pi2.id
+                FROM property_images pi2
+                WHERE pi2.property_id = p.id
+                ORDER BY pi2.display_order ASC, pi2.id ASC
+                LIMIT 1
+            )
+        WHERE p.status = 'available'
+    """
     params = []
 
     if form.location.data:
         query += """
         AND (
-            suburb LIKE %s
-            OR postcode LIKE %s
-            OR city LIKE %s
+            p.suburb LIKE %s
+            OR p.postcode LIKE %s
+            OR p.city LIKE %s
         )
         """
 
@@ -480,31 +587,31 @@ def search_properties(form, selected_preferences=None):
         params.append(f"%{data}%")
 
     if form.property_type.data and form.property_type.data != "Any Type":
-        query += " AND property_type = %s"
+        query += " AND p.property_type = %s"
         params.append(form.property_type.data)
 
     if form.bedrooms.data and form.bedrooms.data != "Any Room":
         if form.bedrooms.data == "4+":
-            query += " AND bedrooms >= %s"
+            query += " AND p.bedrooms >= %s"
             params.append(4)
         else:
-            query += " AND bedrooms = %s"
+            query += " AND p.bedrooms = %s"
             params.append(int(form.bedrooms.data))
 
     if form.price_range.data and form.price_range.data != "Any Price":
         if form.price_range.data == "Under $300":
-            query += " AND price < 300"
+            query += " AND p.price < 300"
         elif form.price_range.data == "$300 - $500":
-            query += " AND price BETWEEN 300 AND 500"
+            query += " AND p.price BETWEEN 300 AND 500"
         elif form.price_range.data == "$500 - $800":
-            query += " AND price BETWEEN 500 AND 800"
+            query += " AND p.price BETWEEN 500 AND 800"
         elif form.price_range.data == "$800+":
-            query += " AND price > 800"
+            query += " AND p.price > 800"
 
     if selected_preferences:
         placeholders = ','.join(['%s'] * len(selected_preferences))
         query += f"""
-        AND id IN (
+        AND p.id IN (
             SELECT property_id
             FROM property_preferences
             WHERE preference_id IN ({placeholders})
@@ -512,11 +619,11 @@ def search_properties(form, selected_preferences=None):
         params.extend(selected_preferences)
 
     if form.sort_by.data == "price_low":
-        query += " ORDER BY price ASC"
+        query += " ORDER BY p.price ASC"
     elif form.sort_by.data == "price_high":
-        query += " ORDER BY price DESC"
+        query += " ORDER BY p.price DESC"
     else:
-        query += " ORDER BY created_at DESC"
+        query += " ORDER BY p.created_at DESC"
 
     cur = mysql.connection.cursor()
     cur.execute(query, tuple(params))
@@ -536,7 +643,8 @@ def search_properties(form, selected_preferences=None):
             row['bathrooms'],
             row['occupants'],
             row['seller_id'],
-            row['image'],
+            row['cover_image'],
+            row['status'],
             row['description'],
             row['created_at']
         )
@@ -644,6 +752,42 @@ def create_enquiry(property_id, buyer_id, form):
     cur.close()
 
 
+def get_enquiry(enquiry_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT
+            e.enquiry_id,
+            e.property_id,
+            e.buyer_id,
+            e.subject,
+            e.message,
+            e.status,
+            e.created_at,
+            p.seller_id,
+            p.title AS property_title
+        FROM enquiries e
+        JOIN properties p ON e.property_id = p.id
+        WHERE e.enquiry_id = %s
+    """, (enquiry_id,))
+    row = cur.fetchone()
+    cur.close()
+    return row
+
+
+def update_enquiry_status(enquiry_id, status):
+    if status not in ENQUIRY_STATUSES:
+        raise ValueError("Invalid enquiry status")
+
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE enquiries
+        SET status = %s
+        WHERE enquiry_id = %s
+    """, (status, enquiry_id))
+    mysql.connection.commit()
+    cur.close()
+
+
 def get_offer(user_id, property_id):
     cur = mysql.connection.cursor()
     cur.execute("""
@@ -688,6 +832,9 @@ def create_offer(property_id, buyer_id, offered_price):
 
 
 def update_offer_status(offer_id, status):
+    if status not in OFFER_STATUSES:
+        raise ValueError("Invalid offer status")
+
     cur = mysql.connection.cursor()
     cur.execute("""
         UPDATE offers
@@ -725,7 +872,7 @@ def get_bookmarks(user_id):
             p.suburb,
             p.city,
             p.postcode,
-            p.image,
+            pi.image AS cover_image,
             p.description,
             p.seller_id,
             u.firstname AS seller_firstname,
@@ -733,6 +880,14 @@ def get_bookmarks(user_id):
         FROM bookmarks b
         JOIN properties p ON b.property_id = p.id
         JOIN users u ON p.seller_id = u.id
+        LEFT JOIN property_images pi
+            ON pi.id = (
+                SELECT pi2.id
+                FROM property_images pi2
+                WHERE pi2.property_id = p.id
+                ORDER BY pi2.display_order ASC, pi2.id ASC
+                LIMIT 1
+            )
         WHERE b.user_id = %s
         ORDER BY b.created_at DESC
     """, (user_id,))

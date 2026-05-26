@@ -11,7 +11,7 @@ Bookmarked Properties
     <div class="page-hero-content">
         <div class="container">
             <h1 class="fw-bold">Bookmarked Properties</h1>
-            <p class="mb-0">Only you can see and manage this list.</p>
+            <p class="mb-0">Keep track of properties you are interested in.</p>
         </div>
     </div>
 </section>
@@ -23,8 +23,8 @@ Bookmarked Properties
             {% for bookmark in bookmarks %}
             <div class="col-12 col-lg-6">
                 <div class="card shadow-sm border-0 h-100 overflow-hidden">
-                    {% if bookmark.image %}
-                    <img src="{{ url_for('static', filename=bookmark.image) }}" class="card-img-top" alt="{{ bookmark.title }}" width="400" height="250">
+                    {% if bookmark.cover_image %}
+                    <img src="{{ url_for('static', filename=bookmark.cover_image) }}" class="card-img-top" alt="{{ bookmark.title }}" width="400" height="250">
                     {% endif %}
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
@@ -70,7 +70,7 @@ Bookmarked Properties
         {% else %}
         <div class="card shadow-sm border-0">
             <div class="card-body p-5 text-center">
-                <h3 class="fw-bold mb-3">No saved properties yet</h3>
+                <h3 class="fw-bold mb-3">No bookmarked properties yet</h3>
                 <p class="text-muted mb-4">When you bookmark a property, it will appear here with your private note.</p>
                 <a href="{{ url_for('main.index') }}" class="btn btn-dark rounded-pill px-4">Browse properties</a>
             </div>

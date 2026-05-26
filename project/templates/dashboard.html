@@ -75,6 +75,7 @@ My Dashboard
                             <tr>
                                 <th>Property</th>
                                 <th>Subject</th>
+                                <th>Status</th>
                                 <th>Seller</th>
                                 <th>Date</th>
                                 <th class="text-end">Action</th>
@@ -85,6 +86,11 @@ My Dashboard
                             <tr>
                                 <td>{{ enquiry.property_title }}</td>
                                 <td>{{ enquiry.subject }}</td>
+                                <td>
+                                    <span class="badge {% if enquiry.status == 'new' %}bg-warning text-dark{% elif enquiry.status == 'responded' %}bg-info text-dark{% else %}bg-secondary{% endif %}">
+                                        {{ enquiry.status }}
+                                    </span>
+                                </td>
                                 <td>{{ enquiry.seller_firstname }} {{ enquiry.seller_lastname }}</td>
                                 <td>{{ enquiry.created_at }}</td>
                                 <td class="text-end"><a href="{{ url_for('main.property_details', property_id=enquiry.property_id) }}" class="btn btn-sm btn-outline-dark rounded-pill">View</a></td>

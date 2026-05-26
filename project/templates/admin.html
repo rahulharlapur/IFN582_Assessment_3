@@ -22,27 +22,45 @@ Admin Dashboard
                             <div class="row g-3">
                                 <div class="col-12 col-md-6">
                                     {{ user_form.firstname.label(class="form-label") }}
-                                    {{ user_form.firstname(class="form-control") }}
+                                    {{ user_form.firstname(class="form-control" ~ (" is-invalid" if user_form.firstname.errors else "")) }}
+                                    {% for error in user_form.firstname.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-6">
                                     {{ user_form.lastname.label(class="form-label") }}
-                                    {{ user_form.lastname(class="form-control") }}
+                                    {{ user_form.lastname(class="form-control" ~ (" is-invalid" if user_form.lastname.errors else "")) }}
+                                    {% for error in user_form.lastname.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12">
                                     {{ user_form.email.label(class="form-label") }}
-                                    {{ user_form.email(class="form-control") }}
+                                    {{ user_form.email(class="form-control" ~ (" is-invalid" if user_form.email.errors else "")) }}
+                                    {% for error in user_form.email.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12">
                                     {{ user_form.password.label(class="form-label") }}
-                                    {{ user_form.password(class="form-control") }}
+                                    {{ user_form.password(class="form-control" ~ (" is-invalid" if user_form.password.errors else "")) }}
+                                    {% for error in user_form.password.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12">
                                     {{ user_form.phone.label(class="form-label") }}
-                                    {{ user_form.phone(class="form-control") }}
+                                    {{ user_form.phone(class="form-control" ~ (" is-invalid" if user_form.phone.errors else "")) }}
+                                    {% for error in user_form.phone.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12">
                                     {{ user_form.role.label(class="form-label") }}
-                                    {{ user_form.role(class="form-select") }}
+                                    {{ user_form.role(class="form-select" ~ (" is-invalid" if user_form.role.errors else "")) }}
+                                    {% for error in user_form.role.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                             </div>
                             <div class="mt-4">
@@ -112,6 +130,7 @@ Admin Dashboard
                                 <th>Seller</th>
                                 <th>Price</th>
                                 <th>Location</th>
+                                <th>Status</th>
                                 <th>Enquiries</th>
                                 <th class="text-end">Actions</th>
                             </tr>
@@ -123,6 +142,11 @@ Admin Dashboard
                                 <td>{{ property.seller_firstname }} {{ property.seller_lastname }}</td>
                                 <td>${{ property.price }}/week</td>
                                 <td>{{ property.suburb }}, {{ property.city }}</td>
+                                <td>
+                                    <span class="badge {% if property.status == 'available' %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {{ property.status }}
+                                    </span>
+                                </td>
                                 <td>{{ property.enquiry_count }}</td>
                                 <td class="text-end">
                                     <a href="{{ url_for('main.edit_property_listing', property_id=property.id) }}" class="btn btn-sm btn-outline-dark rounded-pill me-2">Edit</a>
@@ -133,7 +157,7 @@ Admin Dashboard
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-4">No listings found.</td>
+                                <td colspan="7" class="text-center text-muted py-4">No listings found.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
