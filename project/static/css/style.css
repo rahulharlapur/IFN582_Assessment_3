@@ -161,6 +161,9 @@ body {
     font-size: 0.95rem;
     line-height: 1.6;
     color: #4b5563;
+    max-height: 450px;
+    overflow-y: auto;
+    padding-right: 8px;
 }
 
 
@@ -421,7 +424,10 @@ body {
 .property-document-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    max-height: 134px;
+    overflow-y: auto;
+    padding-right: 8px;
 }
 
 .property-document {
@@ -429,7 +435,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 14px;
+    padding: 10px 12px;
     background: #F9FAFB;
     border: 1px solid #E5E7EB;
     border-radius: 10px;

@@ -17,6 +17,7 @@ from .db import (
     get_users,
     get_management_properties,
     get_property_interactions,
+    get_enquiry,
     get_property_offers,
     create_property,
     update_property,
@@ -27,6 +28,7 @@ from .db import (
     save_bookmark,
     remove_bookmark,
     create_offer,
+    update_enquiry_status,
     update_offer_status,
 )
 from .forms import SearchForm, RegisterForm, LoginForm, EnquiryForm, AdminUserForm, PropertyForm, BookmarkForm, OfferForm
@@ -123,7 +125,7 @@ def login():
         if not user:
             flash("Invalid email or password. Please try again.", "danger")
             return redirect(url_for('main.login'))
-        print(user)
+        #print(user)
         session["user"]={
             "id": user.id,
             "firstname": user.firstname,
@@ -230,17 +232,29 @@ def create_admin_user():
 
     form = AdminUserForm()
     if form.validate_on_submit():
-        form.password.data = sha256(form.password.data.encode()).hexdigest()
         if user_exists(form.email.data):
             flash("That email is already registered.", "danger")
-            return redirect(url_for('main.admin_dashboard'))
+            return render_template(
+                'admin.html',
+                user_form=form,
+                users=get_users(),
+                properties=get_management_properties(),
+                interactions=get_property_interactions(),
+            )
 
+        form.password.data = sha256(form.password.data.encode()).hexdigest()
         create_user(form)
         flash("User account created successfully!", "success")
-    else:
-        flash("Please complete all user fields.", "danger")
+        return redirect(url_for('main.admin_dashboard'))
 
-    return redirect(url_for('main.admin_dashboard'))
+    flash("Please complete all user fields.", "danger")
+    return render_template(
+        'admin.html',
+        user_form=form,
+        users=get_users(),
+        properties=get_management_properties(),
+        interactions=get_property_interactions(),
+    )
 
 
 @bp.route('/admin/users/<int:user_id>/delete', methods=['POST'])
@@ -272,6 +286,41 @@ def listings():
     )
 
 
+def _can_manage_enquiry(enquiry_id):
+    enquiry = get_enquiry(enquiry_id)
+    if not enquiry:
+        abort(404)
+
+    if enquiry['seller_id'] != session['user']['id']:
+        abort(403)
+
+    return enquiry
+
+
+@bp.route('/enquiries/<int:enquiry_id>/status', methods=['POST'])
+def update_enquiry_status_route(enquiry_id):
+    access = require_login('seller')
+    if access:
+        return access
+
+    _can_manage_enquiry(enquiry_id)
+    status = request.form.get('status')
+    try:
+        update_enquiry_status(enquiry_id, status)
+    except ValueError:
+        flash("Invalid enquiry status.", "danger")
+        return redirect(url_for('main.listings'))
+
+    if status == 'new':
+        flash("Enquiry reopened.", "info")
+    elif status == 'responded':
+        flash("Enquiry marked as responded.", "success")
+    else:
+        flash("Enquiry closed.", "info")
+
+    return redirect(url_for('main.listings'))
+
+
 def _can_manage_offer(offer_id):
     offer = None
     offers = get_property_offers()
@@ -290,27 +339,27 @@ def _can_manage_offer(offer_id):
     return offer
 
 
-@bp.route('/offers/<int:offer_id>/accept', methods=['POST'])
-def accept_offer(offer_id):
+@bp.route('/offers/<int:offer_id>/status', methods=['POST'])
+def update_offer_status_route(offer_id):
     access = require_login('seller')
     if access:
         return access
 
     _can_manage_offer(offer_id)
-    update_offer_status(offer_id, 'accepted')
-    flash("Offer accepted.", "success")
-    return redirect(url_for('main.listings'))
+    status = request.form.get('status')
+    try:
+        update_offer_status(offer_id, status)
+    except ValueError:
+        flash("Invalid offer status.", "danger")
+        return redirect(url_for('main.listings'))
 
+    if status == 'accepted':
+        flash("Offer accepted.", "success")
+    elif status == 'rejected':
+        flash("Offer rejected.", "info")
+    else:
+        flash("Offer marked as pending.", "info")
 
-@bp.route('/offers/<int:offer_id>/reject', methods=['POST'])
-def reject_offer(offer_id):
-    access = require_login('seller')
-    if access:
-        return access
-
-    _can_manage_offer(offer_id)
-    update_offer_status(offer_id, 'rejected')
-    flash("Offer rejected.", "info")
     return redirect(url_for('main.listings'))
 
 

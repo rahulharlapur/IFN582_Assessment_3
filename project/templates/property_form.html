@@ -18,55 +18,94 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     {{ form.title.label(class="form-label") }}
-                                    {{ form.title(class="form-control") }}
+                                    {{ form.title(class="form-control" ~ (" is-invalid" if form.title.errors else "")) }}
+                                    {% for error in form.title.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-6">
                                     {{ form.property_type.label(class="form-label") }}
-                                    {{ form.property_type(class="form-select") }}
+                                    {{ form.property_type(class="form-select" ~ (" is-invalid" if form.property_type.errors else "")) }}
+                                    {% for error in form.property_type.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-6">
                                     {{ form.price.label(class="form-label") }}
-                                    {{ form.price(class="form-control") }}
+                                    {{ form.price(class="form-control" ~ (" is-invalid" if form.price.errors else "")) }}
+                                    {% for error in form.price.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-6">
                                     {{ form.suburb.label(class="form-label") }}
-                                    {{ form.suburb(class="form-control") }}
+                                    {{ form.suburb(class="form-control" ~ (" is-invalid" if form.suburb.errors else "")) }}
+                                    {% for error in form.suburb.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-6">
                                     {{ form.city.label(class="form-label") }}
-                                    {{ form.city(class="form-control") }}
+                                    {{ form.city(class="form-control" ~ (" is-invalid" if form.city.errors else "")) }}
+                                    {% for error in form.city.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-4">
                                     {{ form.postcode.label(class="form-label") }}
-                                    {{ form.postcode(class="form-control") }}
+                                    {{ form.postcode(class="form-control" ~ (" is-invalid" if form.postcode.errors else "")) }}
+                                    {% for error in form.postcode.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-4">
                                     {{ form.bedrooms.label(class="form-label") }}
-                                    {{ form.bedrooms(class="form-control") }}
+                                    {{ form.bedrooms(class="form-control" ~ (" is-invalid" if form.bedrooms.errors else "")) }}
+                                    {% for error in form.bedrooms.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-4">
                                     {{ form.bathrooms.label(class="form-label") }}
-                                    {{ form.bathrooms(class="form-control") }}
+                                    {{ form.bathrooms(class="form-control" ~ (" is-invalid" if form.bathrooms.errors else "")) }}
+                                    {% for error in form.bathrooms.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-4">
                                     {{ form.occupants.label(class="form-label") }}
-                                    {{ form.occupants(class="form-control") }}
+                                    {{ form.occupants(class="form-control" ~ (" is-invalid" if form.occupants.errors else "")) }}
+                                    {% for error in form.occupants.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    {{ form.status.label(class="form-label") }}
+                                    {{ form.status(class="form-select" ~ (" is-invalid" if form.status.errors else "")) }}
+                                    {% for error in form.status.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-4">
                                     {{ form.latitude.label(class="form-label") }}
-                                    {{ form.latitude(class="form-control", placeholder="-27.46980000") }}
+                                    {{ form.latitude(class="form-control" ~ (" is-invalid" if form.latitude.errors else "")) }}
+                                    {% for error in form.latitude.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12 col-md-4">
                                     {{ form.longitude.label(class="form-label") }}
-                                    {{ form.longitude(class="form-control", placeholder="153.02510000") }}
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    {{ form.image.label(class="form-label") }}
-                                    {{ form.image(class="form-control") }}
+                                    {{ form.longitude(class="form-control" ~ (" is-invalid" if form.longitude.errors else "")) }}
+                                    {% for error in form.longitude.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-12">
                                     {{ form.description.label(class="form-label") }}
-                                    {{ form.description(class="form-control", rows="5") }}
+                                    {{ form.description(class="form-control" ~ (" is-invalid" if form.description.errors else ""), rows="5") }}
+                                    {% for error in form.description.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
                             </div>
                             <div class="d-flex gap-2 mt-4">

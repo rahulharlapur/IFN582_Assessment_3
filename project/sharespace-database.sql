@@ -44,9 +44,9 @@ CREATE TABLE properties (
 
     postcode VARCHAR(10) NOT NULL,
 
-    latitude DECIMAL(10,8),
+    latitude DECIMAL(10,8) NOT NULL,
 
-    longitude DECIMAL(11,8),
+    longitude DECIMAL(11,8) NOT NULL,
 
     bedrooms INT NOT NULL,
 
@@ -54,9 +54,8 @@ CREATE TABLE properties (
 
     occupants INT NOT NULL,
 
-    compatibility_score DECIMAL(3,1) DEFAULT 0,
 
-    image VARCHAR(255),
+    status ENUM('available', 'unavailable') DEFAULT 'available',
 
     description TEXT,
 
@@ -128,6 +127,8 @@ CREATE TABLE enquiries (
 
     message TEXT NOT NULL,
 
+    status ENUM('new', 'responded', 'closed') DEFAULT 'new',
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (buyer_id)
@@ -197,17 +198,17 @@ INSERT INTO users
 
 VALUES
 
-('Admin', 'One', 'admin1@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000001', 'admin'),
+('Ava', 'Patel', 'admin1@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000001', 'admin'),
 
-('Admin', 'Two', 'admin2@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000002', 'admin'),
+('Marcus', 'Nguyen', 'admin2@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000002', 'admin'),
 
-('Sarah', 'Mitchell', 'sarah@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000003', 'seller'),
+('Sarah', 'Mitchell', 'sarah@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0412003003', 'seller'),
 
-('Daniel', 'Roberts', 'daniel@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000004', 'seller'),
+('Daniel', 'Roberts', 'daniel@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0412003004', 'seller'),
 
-('Rahul', 'Harlapur', 'rahul@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000005', 'buyer'),
+('Rahul', 'Harlapur', 'rahul@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0421004005', 'buyer'),
 
-('Emily', 'Chen', 'emily@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000006', 'buyer');
+('Emily', 'Chen', 'emily@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0421004006', 'buyer');
 
 
 
@@ -247,8 +248,8 @@ INSERT INTO properties
     bedrooms,
     bathrooms,
     occupants,
-    compatibility_score,
-    image,
+
+    status,
     description
 )
 
@@ -256,27 +257,27 @@ VALUES
 
 (
     3,
-    'Modern Shared Apartment Near CBD',
+    'Furnished Shared Apartment Near Queen Street',
     'Shared Apartment',
-    220,
+    295,
     'Brisbane CBD',
     'Brisbane',
     '4000',
     -27.47050000,
     153.02600000,
-    2,
+    3,
     1,
-    2,
-    4.5,
-    'img/pexels-artbovich-7019026.jpg',
-    'Modern shared apartment located close to public transport and universities.'
+    3,
+
+    'available',
+    'Furnished room in a tidy shared apartment within walking distance of Queen Street Mall, Central Station, QUT Gardens Point and river bike paths. Rent includes internet and shared cleaning supplies.'
 ),
 
 (
     3,
-    'Bright Shared Apartment',
+    'Sunny South Brisbane Share Apartment',
     'Shared Apartment',
-    240,
+    320,
     'South Brisbane',
     'Brisbane',
     '4101',
@@ -285,16 +286,16 @@ VALUES
     2,
     2,
     2,
-    4.7,
-    'img/pexels-pixabay-271618.jpg',
-    'Spacious apartment with natural lighting and furnished shared spaces.'
+
+    'available',
+    'Light-filled apartment close to South Bank, TAFE Queensland and busway services. The room is furnished, bills are split monthly, and current housemates prefer a clean weekday routine.'
 ),
 
 (
     3,
-    'Luxury Entire Apartment',
+    'Riverfront Entire Apartment in New Farm',
     'Entire Apartment',
-    450,
+    620,
     'New Farm',
     'Brisbane',
     '4005',
@@ -303,16 +304,16 @@ VALUES
     2,
     2,
     2,
-    4.9,
-    'img/pexels-fotoaibe-1571453.jpg',
-    'Premium entire apartment overlooking the Brisbane River.'
+
+    'available',
+    'Private two-bedroom apartment near New Farm Park with secure parking, air conditioning and a balcony facing the river. Suitable for a couple or two professionals wanting a full-place lease.'
 ),
 
 (
     4,
-    'Quiet Shared House',
+    'Quiet Toowong Shared House',
     'Shared House',
-    210,
+    245,
     'Toowong',
     'Brisbane',
     '4066',
@@ -321,16 +322,16 @@ VALUES
     4,
     2,
     4,
-    4.6,
-    'img/pexels-john-tekeridis-21837-1428348.jpg',
-    'Peaceful shared home suitable for students and professionals.'
+
+    'available',
+    'Calm four-bedroom house near Toowong Village, bus stops and the train station. The available room suits a student or professional who wants a quiet house with shared study space and a backyard.'
 ),
 
 (
     4,
-    'Affordable Private Room',
+    'Private Room Near PA Hospital',
     'Private Room',
-    180,
+    225,
     'Woolloongabba',
     'Brisbane',
     '4102',
@@ -339,16 +340,16 @@ VALUES
     1,
     1,
     1,
-    4.2,
-    'img/pexels-andrew-3201763.jpg',
-    'Affordable furnished private room near public transport.'
+
+    'available',
+    'Lockable furnished room in a well-kept Woolloongabba townhouse close to the PA Hospital, Gabba busway and local cafes. Electricity and water are included in the weekly rent.'
 ),
 
 (
     4,
-    'Clean Shared Apartment',
+    'West End Apartment With Courtyard',
     'Shared Apartment',
-    230,
+    310,
     'West End',
     'Brisbane',
     '4101',
@@ -357,16 +358,16 @@ VALUES
     2,
     1,
     2,
-    4.8,
-    'img/pexels-artbovich-7195864.jpg',
-    'Well-maintained apartment with peaceful shared living spaces.'
+
+    'available',
+    'Clean two-bedroom apartment in West End with a small courtyard, furnished lounge and easy access to Boundary Street dining. Best suited to a non-smoker who values tidy shared spaces.'
 ),
 
 (
     3,
-    'Student Shared Apartment',
+    'St Lucia Student Share Apartment',
     'Shared Apartment',
-    260,
+    285,
     'St Lucia',
     'Brisbane',
     '4067',
@@ -375,16 +376,16 @@ VALUES
     3,
     2,
     3,
-    4.6,
-    'img/pexels-pixabay-271618.jpg',
-    'Shared apartment located close to UQ campus.'
+
+    'available',
+    'Three-bedroom student share apartment close to UQ, Guyatt Park ferry terminal and local buses. The room includes a desk, built-in robe and access to a shared balcony.'
 ),
 
 (
     3,
-    'Spacious Shared House',
+    'Indooroopilly Shared House With Study',
     'Shared House',
-    240,
+    275,
     'Indooroopilly',
     'Brisbane',
     '4068',
@@ -393,16 +394,16 @@ VALUES
     4,
     2,
     4,
-    4.4,
-    'img/pexels-artbovich-7019026.jpg',
-    'Large shared house with backyard and study area.'
+
+    'available',
+    'Large shared house near Indooroopilly Shopping Centre with a dedicated study nook, covered outdoor area and off-street parking. Suitable for tenants wanting a spacious shared home with study-friendly areas.'
 ),
 
 (
     3,
-    'Modern Studio Apartment',
+    'South Bank Studio With Pool Access',
     'Studio',
-    320,
+    410,
     'South Bank',
     'Brisbane',
     '4101',
@@ -411,16 +412,16 @@ VALUES
     1,
     1,
     1,
-    4.8,
-    'img/pexels-pixabay-271618.jpg',
-    'Modern studio apartment with gym and pool access.'
+
+    'available',
+    'Self-contained studio near South Bank Parklands with lift access, gym, pool and secure entry. Ideal for someone wanting a private rental close to city campuses and public transport.'
 ),
 
 (
     4,
-    'Budget Private Room',
+    'Annerley Private Room Near Busway',
     'Private Room',
-    170,
+    195,
     'Annerley',
     'Brisbane',
     '4103',
@@ -429,16 +430,16 @@ VALUES
     1,
     1,
     1,
-    4.1,
-    'img/pexels-fotoaibe-1571453.jpg',
-    'Budget-friendly private room in quiet neighbourhood.'
+
+    'available',
+    'Affordable private room in a quiet Annerley house with a shared kitchen, laundry and covered deck. Frequent buses run to the CBD, UQ and Griffith Nathan.'
 ),
 
 (
     4,
-    'Social Shared Apartment',
+    'Kelvin Grove Social Student Apartment',
     'Shared Apartment',
-    270,
+    300,
     'Kelvin Grove',
     'Brisbane',
     '4059',
@@ -447,16 +448,16 @@ VALUES
     3,
     2,
     3,
-    4.7,
-    'img/pexels-pixabay-271618.jpg',
-    'Perfect shared apartment for social student living.'
+
+    'available',
+    'Three-bedroom apartment within walking distance of QUT Kelvin Grove, supermarkets and Victoria Park. Current tenants are social but respectful during study weeks.'
 ),
 
 (
     4,
-    'Private Room Near City',
+    'Highgate Hill Private Room With City Views',
     'Private Room',
-    240,
+    280,
     'Highgate Hill',
     'Brisbane',
     '4101',
@@ -465,16 +466,16 @@ VALUES
     1,
     1,
     1,
-    4.3,
-    'img/pexels-fotoaibe-1571453.jpg',
-    'Fully furnished private room close to Brisbane CBD.'
+
+    'available',
+    'Furnished private room in Highgate Hill with city views, shared balcony and fast access to South Bank and West End. Rent includes internet and basic household items.'
 ),
 
 (
     3,
-    'Luxury Studio Apartment',
+    'Fortitude Valley Premium Studio',
     'Studio',
-    380,
+    455,
     'Fortitude Valley',
     'Brisbane',
     '4006',
@@ -483,16 +484,16 @@ VALUES
     1,
     1,
     1,
-    4.9,
-    'img/pexels-pixabay-271618.jpg',
-    'Luxury studio apartment with premium amenities.'
+
+    'available',
+    'Premium furnished studio close to James Street, Fortitude Valley station and nightlife. Suitable for a tenant wanting a private inner-city base with easy access to dining and transport.'
 ),
 
 (
     4,
-    'Family Friendly Shared House',
+    'Chermside Shared House With Parking',
     'Shared House',
-    250,
+    265,
     'Chermside',
     'Brisbane',
     '4032',
@@ -501,16 +502,16 @@ VALUES
     4,
     2,
     4,
-    4.5,
-    'img/pexels-fotoaibe-1571453.jpg',
-    'Large shared house with parking and outdoor area.'
+
+    'available',
+    'Spacious shared house near Westfield Chermside with parking, a large kitchen and outdoor entertaining area. Existing tenants are friendly professionals with mixed work schedules.'
 ),
 
 (
     3,
-    'Nightlife Shared Apartment',
+    'Fortitude Valley Apartment for Night Owl',
     'Shared Apartment',
-    230,
+    335,
     'Fortitude Valley',
     'Brisbane',
     '4006',
@@ -519,9 +520,9 @@ VALUES
     2,
     1,
     2,
-    4.2,
-    'img/pexels-andrew-3201763.jpg',
-    'Shared apartment located near restaurants and nightlife.'
+
+    'available',
+    'Shared apartment close to Fortitude Valley station, live music venues and late-night dining. Best suited to a tenant who is comfortable with an active inner-city lifestyle.'
 );
 
 INSERT INTO property_preferences
@@ -593,11 +594,29 @@ INSERT INTO offers
 
 VALUES
 
-(5, 3, 270, 'accepted'),
+(5, 7, 280, 'accepted'),
 
-(6, 9, 330, 'rejected'),
+(6, 3, 590, 'rejected'),
 
-(5, 11, 250, 'pending');
+(6, 9, 405, 'pending');
+
+
+INSERT INTO bookmarks
+(user_id, property_id, note)
+
+VALUES
+
+(5, 2, 'Close to South Bank and has the clean shared-space routine I want.'),
+
+(5, 7, 'Best match for UQ access and already includes a desk.'),
+
+(5, 9, 'Good private studio option if I decide not to share.'),
+
+(6, 3, 'Entire apartment with secure parking for a longer lease.'),
+
+(6, 11, 'Social student apartment near QUT Kelvin Grove.'),
+
+(6, 15, 'Inner-city option that matches my night owl schedule.');
 
 
 CREATE TABLE property_images (
@@ -637,58 +656,159 @@ CREATE TABLE property_documents (
 INSERT INTO property_images
 (property_id, image, display_order)
 VALUES
-(1, 'img/pexels-artbovich-7019026.jpg', 1),
-(1, 'img/pexels-cottonbro-4781415.jpg', 2),
-(1, 'img/pexels-cottonbro-5158945.jpg', 3),
+(1, 'img/property/rental-cover-01.jpg', 1),
+(1, 'img/property/rental-kitchen-01.jpg', 2),
+(1, 'img/property/rental-bedroom-01.jpg', 3),
+(1, 'img/property/rental-bathroom-01.jpg', 4),
 
-(2, 'img/pexels-pixabay-271618.jpg', 1),
-(2, 'img/pexels-pavel-danilyuk-7776179.jpg', 2),
+(2, 'img/property/rental-cover-02.jpg', 1),
+(2, 'img/property/rental-kitchen-02.jpg', 2),
+(2, 'img/property/rental-bedroom-02.jpg', 3),
+(2, 'img/property/rental-bathroom-02.jpg', 4),
 
-(3, 'img/pexels-fotoaibe-1571453.jpg', 1),
-(3, 'img/pexels-artbovich-7195864.jpg', 2),
+(3, 'img/property/rental-cover-03.jpg', 1),
+(3, 'img/property/rental-kitchen-03.jpg', 2),
+(3, 'img/property/rental-bedroom-03.jpg', 3),
+(3, 'img/property/rental-bathroom-03.jpg', 4),
 
-(4, 'img/pexels-john-tekeridis-21837-1428348.jpg', 1),
-(4, 'img/pexels-curtis-adams-1694007-7028071.jpg', 2),
+(4, 'img/property/rental-cover-04.jpg', 1),
+(4, 'img/property/rental-kitchen-04.jpg', 2),
+(4, 'img/property/rental-bedroom-04.jpg', 3),
+(4, 'img/property/rental-bathroom-04.jpg', 4),
 
-(5, 'img/pexels-andrew-3201763.jpg', 1),
-(5, 'img/pexels-thomas-plets-1139798-5403840.jpg', 2),
+(5, 'img/property/rental-cover-05.jpg', 1),
+(5, 'img/property/rental-kitchen-05.jpg', 2),
+(5, 'img/property/rental-bedroom-05.jpg', 3),
+(5, 'img/property/rental-bathroom-05.jpg', 4),
 
-(6, 'img/pexels-artbovich-7195864.jpg', 1),
-(6, 'img/pexels-iris-35972950.jpg', 2);
+(6, 'img/property/rental-cover-06.jpg', 1),
+(6, 'img/property/rental-kitchen-06.jpg', 2),
+(6, 'img/property/rental-bedroom-06.jpg', 3),
+(6, 'img/property/rental-bathroom-06.jpg', 4),
+
+(7, 'img/property/rental-cover-07.jpg', 1),
+(7, 'img/property/rental-kitchen-01.jpg', 2),
+(7, 'img/property/rental-bedroom-02.jpg', 3),
+(7, 'img/property/rental-bathroom-03.jpg', 4),
+
+(8, 'img/property/rental-cover-08.jpg', 1),
+(8, 'img/property/rental-kitchen-02.jpg', 2),
+(8, 'img/property/rental-bedroom-03.jpg', 3),
+(8, 'img/property/rental-bathroom-04.jpg', 4),
+
+(9, 'img/property/rental-cover-09.jpg', 1),
+(9, 'img/property/rental-kitchen-03.jpg', 2),
+(9, 'img/property/rental-bedroom-04.jpg', 3),
+(9, 'img/property/rental-bathroom-05.jpg', 4),
+
+(10, 'img/property/rental-cover-10.jpg', 1),
+(10, 'img/property/rental-kitchen-04.jpg', 2),
+(10, 'img/property/rental-bedroom-05.jpg', 3),
+(10, 'img/property/rental-bathroom-06.jpg', 4),
+
+(11, 'img/property/rental-cover-11.jpg', 1),
+(11, 'img/property/rental-kitchen-05.jpg', 2),
+(11, 'img/property/rental-bedroom-06.jpg', 3),
+(11, 'img/property/rental-bathroom-01.jpg', 4),
+
+(12, 'img/property/rental-cover-12.jpg', 1),
+(12, 'img/property/rental-kitchen-06.jpg', 2),
+(12, 'img/property/rental-bedroom-01.jpg', 3),
+(12, 'img/property/rental-bathroom-02.jpg', 4),
+
+(13, 'img/property/rental-cover-13.jpg', 1),
+(13, 'img/property/rental-kitchen-01.jpg', 2),
+(13, 'img/property/rental-bedroom-03.jpg', 3),
+(13, 'img/property/rental-bathroom-05.jpg', 4),
+
+(14, 'img/property/rental-cover-14.jpg', 1),
+(14, 'img/property/rental-kitchen-02.jpg', 2),
+(14, 'img/property/rental-bedroom-04.jpg', 3),
+(14, 'img/property/rental-bathroom-06.jpg', 4),
+
+(15, 'img/property/rental-cover-15.jpg', 1),
+(15, 'img/property/rental-kitchen-03.jpg', 2),
+(15, 'img/property/rental-bedroom-05.jpg', 3),
+(15, 'img/property/rental-bathroom-01.jpg', 4);
 
 
 INSERT INTO property_documents
 (property_id, file_path)
 VALUES
-(1, 'documents/rental-application-checklist.txt'),
-(1, 'documents/condition-report.txt'),
-(2, 'documents/rental-application-checklist.txt'),
-(3, 'documents/condition-report.txt'),
-(4, 'documents/inspection-checklist.txt'),
-(5, 'documents/rental-application-checklist.txt'),
-(6, 'documents/condition-report.txt'),
-(7, 'documents/inspection-checklist.txt'),
-(8, 'documents/rental-application-checklist.txt'),
-(9, 'documents/condition-report.txt'),
-(10, 'documents/inspection-checklist.txt'),
-(11, 'documents/rental-application-checklist.txt'),
-(12, 'documents/condition-report.txt'),
-(13, 'documents/inspection-checklist.txt'),
-(14, 'documents/rental-application-checklist.txt'),
-(15, 'documents/condition-report.txt');
+(1, 'documents/Condition Report.pdf'),
+(1, 'documents/House Agreement.pdf'),
+(1, 'documents/Offer and Enquiry Guide.pdf'),
+
+(2, 'documents/Condition Report.pdf'),
+(2, 'documents/House Agreement.pdf'),
+(2, 'documents/Offer and Enquiry Guide.pdf'),
+
+(3, 'documents/Condition Report.pdf'),
+(3, 'documents/House Agreement.pdf'),
+(3, 'documents/Offer and Enquiry Guide.pdf'),
+
+(4, 'documents/Condition Report.pdf'),
+(4, 'documents/House Agreement.pdf'),
+(4, 'documents/Offer and Enquiry Guide.pdf'),
+
+(5, 'documents/Condition Report.pdf'),
+(5, 'documents/House Agreement.pdf'),
+(5, 'documents/Offer and Enquiry Guide.pdf'),
+
+(6, 'documents/Condition Report.pdf'),
+(6, 'documents/House Agreement.pdf'),
+(6, 'documents/Offer and Enquiry Guide.pdf'),
+
+(7, 'documents/Condition Report.pdf'),
+(7, 'documents/House Agreement.pdf'),
+(7, 'documents/Offer and Enquiry Guide.pdf'),
+
+(8, 'documents/Condition Report.pdf'),
+(8, 'documents/House Agreement.pdf'),
+(8, 'documents/Offer and Enquiry Guide.pdf'),
+
+(9, 'documents/Condition Report.pdf'),
+(9, 'documents/House Agreement.pdf'),
+(9, 'documents/Offer and Enquiry Guide.pdf'),
+
+(10, 'documents/Condition Report.pdf'),
+(10, 'documents/House Agreement.pdf'),
+(10, 'documents/Offer and Enquiry Guide.pdf'),
+
+(11, 'documents/Condition Report.pdf'),
+(11, 'documents/House Agreement.pdf'),
+(11, 'documents/Offer and Enquiry Guide.pdf'),
+
+(12, 'documents/Condition Report.pdf'),
+(12, 'documents/House Agreement.pdf'),
+(12, 'documents/Offer and Enquiry Guide.pdf'),
+
+(13, 'documents/Condition Report.pdf'),
+(13, 'documents/House Agreement.pdf'),
+(13, 'documents/Offer and Enquiry Guide.pdf'),
+
+(14, 'documents/Condition Report.pdf'),
+(14, 'documents/House Agreement.pdf'),
+(14, 'documents/Offer and Enquiry Guide.pdf'),
+
+(15, 'documents/Condition Report.pdf'),
+(15, 'documents/House Agreement.pdf'),
+(15, 'documents/Offer and Enquiry Guide.pdf');
 
 
 INSERT INTO enquiries
-(buyer_id, property_id, subject, message)
+(buyer_id, property_id, subject, message, status)
 
 VALUES
 
-(5, 1, 'Room availability', 'Is the room still available?'),
+(5, 1, 'Move-in date and bills', 'Hi Sarah, is the room available from the first week of July, and does the weekly rent include internet and water?', 'new'),
 
-(5, 3, 'Inspection request', 'Can I schedule an inspection this weekend?'),
+(5, 7, 'Inspection request near UQ', 'Could I inspect the St Lucia apartment this Saturday morning? I am looking for a furnished room close to campus.', 'responded'),
 
-(6, 8, 'Utilities question', 'Are utilities included in rent?'),
+(6, 3, 'Lease length for entire apartment', 'I am interested in the New Farm apartment. Would the owner consider a six-month lease with an option to extend?', 'closed'),
 
-(6, 11, 'Parking question', 'Is parking available nearby?'),
+(6, 11, 'Parking near Kelvin Grove', 'Is there visitor parking or street parking available nearby? I drive to placement twice a week.', 'new'),
 
-(5, 15, 'Pet policy', 'Are pets allowed in this apartment?');
+(5, 5, 'Furniture and inspection time', 'Can you confirm whether the private room includes a bed and desk, and whether inspections are available after 5 pm?', 'responded'),
+
+(6, 15, 'Noise and housemate routine', 'The location suits my schedule. Are the current housemates comfortable with someone who works some late shifts?', 'new');
