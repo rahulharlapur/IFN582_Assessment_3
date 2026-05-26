@@ -77,11 +77,11 @@ class PropertyForm(FlaskForm):
     )
     bedrooms = IntegerField(
         "Bedrooms",
-        validators=[InputRequired(), NumberRange(min=0)],
+        validators=[InputRequired(), NumberRange(min=1)],
     )
     bathrooms = IntegerField(
         "Bathrooms",
-        validators=[InputRequired(), NumberRange(min=0)],
+        validators=[InputRequired(), NumberRange(min=1)],
     )
     occupants = IntegerField(
         "Occupants",

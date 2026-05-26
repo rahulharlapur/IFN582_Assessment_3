@@ -3,15 +3,16 @@ from . import mysql
 from .models import Preference, Property, User
 
 FALLBACK_PROPERTY_IMAGES = [
-    'img/pexels-artbovich-7019026.jpg',
-    'img/pexels-pixabay-271618.jpg',
-    'img/pexels-fotoaibe-1571453.jpg',
+    'img/property/rental-cover-17.jpg',
+    'img/property/rental-kitchen-07.jpg',
+    'img/property/rental-bedroom-01.jpg',
+    'img/property/rental-bathroom-01.jpg',
 ]
 
 FALLBACK_PROPERTY_DOCUMENTS = [
-    'documents/rental-application-checklist.txt',
-    'documents/condition-report.txt',
-    'documents/inspection-checklist.txt',
+    'documents/Condition Report.pdf',
+    'documents/House Agreement.pdf',
+    'documents/Offer and Enquiry Guide.pdf',
 ]
 
 ENQUIRY_STATUSES = {'new', 'responded', 'closed'}

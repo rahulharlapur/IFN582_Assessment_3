@@ -13,6 +13,7 @@ class User:
     role: str
 
 
+
 @dataclass
 class Property:
     id: int
