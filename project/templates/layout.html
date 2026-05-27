@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     <section>
         <div id="header" class="bg-light border-bottom border-dark">
@@ -105,12 +105,12 @@
         {% endif %}
         {% endwith %}
     </div>
-    <div>
+    <main class="d-flex flex-column flex-grow-1">
 
         {% block content %}
         {% endblock %}
 
-    </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
