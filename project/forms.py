@@ -9,7 +9,7 @@ from wtforms.fields import (
     IntegerField,
     DecimalField,
 )
-from wtforms.validators import email, InputRequired, Length, NumberRange
+from wtforms.validators import Regexp, email, InputRequired, Length, NumberRange
 
 
 class RegisterForm(FlaskForm):
@@ -18,8 +18,23 @@ class RegisterForm(FlaskForm):
     firstname = StringField("Your first name", validators=[InputRequired()])
     lastname = StringField("Your surname", validators=[InputRequired()])
     email = StringField("Email", validators=[InputRequired(), email()])
-    password = PasswordField("Password", validators=[InputRequired()])
-    phone = StringField("Your phone number", validators=[InputRequired()])
+    password = PasswordField(
+        "Password",
+        validators=[
+        InputRequired(),
+        Regexp(
+            r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$',
+            message="Password must be at least 8 characters and contain an uppercase letter, lowercase letter, and number."
+        )
+    ]
+    )
+    phone = StringField("Your phone number", validators=[
+        InputRequired(),
+        Regexp(
+            r'^[0-9+\-\s()]{8,20}$',
+            message="Please enter a valid phone number."
+        )
+    ])
     role = SelectField(
         "Select Role", choices=[("buyer", "Tenant"), ("seller", "Listing Owner")]
     )
@@ -32,8 +47,22 @@ class AdminUserForm(FlaskForm):
     firstname = StringField("First name", validators=[InputRequired()])
     lastname = StringField("Last name", validators=[InputRequired()])
     email = StringField("Email", validators=[InputRequired(), email()])
-    password = PasswordField("Password", validators=[InputRequired()])
-    phone = StringField("Phone number", validators=[InputRequired()])
+    password = PasswordField(
+        "Password",
+        validators=[
+        InputRequired(),
+        Regexp(
+            r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$',
+            message="Password must be at least 8 characters and contain an uppercase letter, lowercase letter, and number."
+        )
+    ])
+    phone = StringField("Phone number", validators=[
+        InputRequired(),
+        Regexp(
+            r'^[0-9+\-\s()]{8,20}$',
+            message="Please enter a valid phone number."
+        )
+    ])
     role = SelectField(
         "Role",
         choices=[
