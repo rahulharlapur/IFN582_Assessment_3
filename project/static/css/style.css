@@ -7,9 +7,15 @@
     --border: #E5E7EB;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     background-color: #f5f7f6;
     color: var(--text-main);
+    display: flex;
+    flex-direction: column;
 }
 
 .custom-btn {
@@ -226,6 +232,7 @@ body {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(12px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    margin-top: auto;
 }
 
 #header {
@@ -241,6 +248,10 @@ body {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
+}
+
+body > div:not(.position-fixed) {
+    flex: 1;
 }
 
 .search_area label {
