@@ -51,6 +51,8 @@ def _ensure_fallback_property_assets(cur, property_id):
 
 def create_user(form):
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT create_user_point")
     cur.execute("""
         INSERT INTO users (
             firstname,
@@ -69,14 +71,16 @@ def create_user(form):
         form.phone.data,
         form.role.data
     ))
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
 
 
 def delete_user(user_id):
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT delete_user_point")
     cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
 
 
@@ -363,6 +367,8 @@ def get_property_offers(owner_id=None):
 
 def create_property(form, seller_id):
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT create_property_point")
     cur.execute("""
         INSERT INTO properties (
             seller_id,
@@ -402,12 +408,14 @@ def create_property(form, seller_id):
     _save_property_preferences(cur, property_id, form.preferences.data)
     _ensure_fallback_property_assets(cur, property_id)
 
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
 
 
 def update_property(property_id, form):
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT update_property_point")
     cur.execute("""
         UPDATE properties
         SET title = %s,
@@ -441,17 +449,20 @@ def update_property(property_id, form):
         property_id,
     ))
 
+    cur.execute("SAVEPOINT after_update")
     _save_property_preferences(cur, property_id, form.preferences.data)
     _ensure_fallback_property_assets(cur, property_id)
 
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
 
 
 def delete_property(property_id):
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT delete_property_point")
     cur.execute("DELETE FROM properties WHERE id = %s", (property_id,))
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
 
 
@@ -733,11 +744,15 @@ def calculate_compatibility(property_id, user_id):
 def save_user_preferences(user_id, selected_preferences):
     if session.get("logged_in") and session["user"]["role"] == "buyer":
         cur = mysql.connection.cursor()
+        cur.execute("BEGIN")
+        cur.execute("SAVEPOINT save_prefs_point")
 
         cur.execute("""
             DELETE FROM user_preferences
             WHERE user_id = %s
         """, (user_id,))
+
+        cur.execute("SAVEPOINT after_delete")
 
         for pref_id in selected_preferences:
 
@@ -747,7 +762,7 @@ def save_user_preferences(user_id, selected_preferences):
                 VALUES (%s, %s)
             """, (user_id, pref_id))
 
-        mysql.connection.commit()
+        cur.execute("COMMIT")
 
         cur.close()
 
@@ -764,6 +779,8 @@ def get_user_preferences(user_id):
 
 def create_enquiry(property_id, buyer_id, form):
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT create_enquiry_point")
     cur.execute("""
         INSERT INTO enquiries (
             property_id,
@@ -778,7 +795,7 @@ def create_enquiry(property_id, buyer_id, form):
         form.subject.data,
         form.message.data
     ))
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
 
 
@@ -809,12 +826,14 @@ def update_enquiry_status(enquiry_id, status):
         raise ValueError("Invalid enquiry status")
 
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT update_enquiry_point")
     cur.execute("""
         UPDATE enquiries
         SET status = %s
         WHERE enquiry_id = %s
     """, (status, enquiry_id))
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
 
 
@@ -834,6 +853,8 @@ def get_offer(user_id, property_id):
 
 def create_offer(property_id, buyer_id, offered_price):
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT create_offer_point")
     cur.execute("""
         SELECT id
         FROM offers
@@ -844,6 +865,7 @@ def create_offer(property_id, buyer_id, offered_price):
     existing_offer = cur.fetchone()
 
     if existing_offer:
+        cur.execute("SAVEPOINT update_offer")
         cur.execute("""
             UPDATE offers
             SET offered_price = %s,
@@ -852,12 +874,13 @@ def create_offer(property_id, buyer_id, offered_price):
             WHERE id = %s
         """, (offered_price, existing_offer['id']))
     else:
+        cur.execute("SAVEPOINT insert_offer")
         cur.execute("""
             INSERT INTO offers (buyer_id, property_id, offered_price, status)
             VALUES (%s, %s, %s, 'pending')
         """, (buyer_id, property_id, offered_price))
 
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
 
 
@@ -866,12 +889,14 @@ def update_offer_status(offer_id, status):
         raise ValueError("Invalid offer status")
 
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT update_status_point")
     cur.execute("""
         UPDATE offers
         SET status = %s
         WHERE id = %s
     """, (status, offer_id))
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
 
 
@@ -928,6 +953,8 @@ def get_bookmarks(user_id):
 
 def save_bookmark(user_id, property_id, note):
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT save_bookmark_point")
     cur.execute("""
         INSERT INTO bookmarks (user_id, property_id, note)
         VALUES (%s, %s, %s)
@@ -935,15 +962,17 @@ def save_bookmark(user_id, property_id, note):
             note = VALUES(note),
             created_at = CURRENT_TIMESTAMP
     """, (user_id, property_id, note))
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
 
 
 def remove_bookmark(user_id, property_id):
     cur = mysql.connection.cursor()
+    cur.execute("BEGIN")
+    cur.execute("SAVEPOINT remove_bookmark_point")
     cur.execute("""
         DELETE FROM bookmarks
         WHERE user_id = %s AND property_id = %s
     """, (user_id, property_id))
-    mysql.connection.commit()
+    cur.execute("COMMIT")
     cur.close()
