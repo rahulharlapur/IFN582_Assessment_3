@@ -310,6 +310,16 @@ body {
     color: var(--primary);
 }
 
+.bookmark-note-box {
+    min-height: 132px;
+}
+
+.bookmark-note-preview {
+    max-height: 6em;
+    line-height: 1.5;
+    overflow-y: auto;
+}
+
 .property-summary-band {
     display: flex;
     align-items: flex-end;
