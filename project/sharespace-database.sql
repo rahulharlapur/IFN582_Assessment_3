@@ -13,11 +13,11 @@ CREATE TABLE users (
 
     lastname VARCHAR(100) NOT NULL,
 
-    email VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE CHECK (LENGTH(email) > 0 AND email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'),
 
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL CHECK (LENGTH(password) >= 8),
 
-    phone VARCHAR(20) NOT NULL,
+    phone VARCHAR(20) NOT NULL CHECK (LENGTH(phone) = 10 AND phone REGEXP '^04[0-9]{8}$'),
 
     role ENUM('admin', 'seller', 'buyer') NOT NULL,
 
@@ -36,13 +36,11 @@ CREATE TABLE properties (
 
     property_type VARCHAR(50) NOT NULL,
 
-    price DECIMAL(10,2) NOT NULL,
-
     suburb VARCHAR(100) NOT NULL,
 
     city VARCHAR(100) NOT NULL,
 
-    postcode VARCHAR(10) NOT NULL,
+    postcode VARCHAR(10) NOT NULL CHECK (LENGTH(postcode) = 4 AND postcode REGEXP '^[0-9]{4}$'),
 
     latitude DECIMAL(10,8) NOT NULL,
 
@@ -60,6 +58,8 @@ CREATE TABLE properties (
     description TEXT,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    price DECIMAL(10,2) NOT NULL CHECK (price > 0),
 
     FOREIGN KEY (seller_id)
         REFERENCES users(id)
@@ -311,7 +311,7 @@ VALUES
 
 (
     4,
-    'Quiet Toowong Shared House',
+    'Quiet Toowong Shared House with Study Space',
     'Shared House',
     245,
     'Toowong',
@@ -473,7 +473,7 @@ VALUES
 
 (
     3,
-    'Fortitude Valley Premium Studio',
+    'Fortitude Valley Premium Studio with Parking',
     'Studio',
     455,
     'Fortitude Valley',
