@@ -82,7 +82,7 @@ Property Details
                             Offer
                         </button>
                         {%elif session.get("user") and session.get("user").get("role") == "seller" and session.get("user").get("id") == property.seller_id %}
-                        <a href="{{ url_for('main.edit_property_listing', property_id=property.id) }}" class="btn btn-outline-dark rounded-pill px-4">
+                        <a href="{{ url_for('main.edit_property_listing', property_id=property.id) }}" class="btn btn-primary rounded-pill px-4">
                             <i class="bi bi-pencil-square"></i>
                             Edit Listing
                         </a>

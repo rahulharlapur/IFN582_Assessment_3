@@ -74,7 +74,6 @@ My Dashboard
                         <thead>
                             <tr>
                                 <th>Property</th>
-                                <th>Subject</th>
                                 <th>Status</th>
                                 <th>Seller</th>
                                 <th>Date</th>
@@ -85,7 +84,6 @@ My Dashboard
                             {% for enquiry in enquiries %}
                             <tr>
                                 <td>{{ enquiry.property_title }}</td>
-                                <td>{{ enquiry.subject }}</td>
                                 <td>
                                     <span class="badge {% if enquiry.status == 'new' %}bg-warning text-dark{% elif enquiry.status == 'responded' %}bg-info text-dark{% else %}bg-secondary{% endif %}">
                                         {{ enquiry.status }}
@@ -93,7 +91,13 @@ My Dashboard
                                 </td>
                                 <td>{{ enquiry.seller_firstname }} {{ enquiry.seller_lastname }}</td>
                                 <td>{{ enquiry.created_at }}</td>
-                                <td class="text-end"><a href="{{ url_for('main.property_details', property_id=enquiry.property_id) }}" class="btn btn-sm btn-outline-dark rounded-pill">View</a></td>
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-pill"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#buyerEnquiryModal{{ enquiry.enquiry_id }}">
+                                        View
+                                    </button>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -142,4 +146,38 @@ My Dashboard
         </div>
     </div>
 </section>
+
+{% for enquiry in enquiries %}
+<div class="modal fade" id="buyerEnquiryModal{{ enquiry.enquiry_id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Enquiry Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fw-semibold mb-1">{{ enquiry.property_title }}</p>
+                <p class="text-muted small mb-3">
+                    {{ enquiry.seller_firstname }} {{ enquiry.seller_lastname }} • {{ enquiry.created_at }}
+                </p>
+                <div class="mb-3">
+                    <p class="fw-semibold mb-1">Subject</p>
+                    <p class="mb-0">{{ enquiry.subject }}</p>
+                </div>
+                <div>
+                    <p class="fw-semibold mb-1">Message</p>
+                    <p class="text-muted mb-0 enquiry-message-text">{{ enquiry.message }}</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="{{ url_for('main.property_details', property_id=enquiry.property_id) }}"
+                    class="btn btn-outline-dark rounded-pill">
+                    Property Details
+                </a>
+                <button type="button" class="btn btn-primary rounded-pill" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 {% endblock %}

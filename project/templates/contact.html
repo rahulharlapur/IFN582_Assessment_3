@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Contact Us
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <img src="{{ url_for('static', filename='img/pexels-cottonbro-5158945.jpg') }}" alt="Shared living room"
+        class="page-hero-img">
+    <div class="page-hero-content">
+        <div class="container">
+            <h1 class="fw-bold">Contact Us</h1>
+            <p class="mb-0">Get help with listings, enquiries, offers, or your ShareSpace account.</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-12 col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="fw-bold mb-3">ShareSpace Support</h2>
+                        <p class="text-muted mb-4">
+                            Contact the ShareSpace team using the details below.
+                        </p>
+
+                        <div class="row g-4">
+                            <div class="col-12 col-md-6">
+                                <p class="fw-semibold mb-1">Email</p>
+                                <a class="text-decoration-none" href="mailto:support@sharespace.com">
+                                    support@sharespace.com
+                                </a>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <p class="fw-semibold mb-1">Phone</p>
+                                <a class="text-decoration-none" href="tel:+61730000000">
+                                    +61 7 3000 0000
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <p class="fw-semibold mb-1">Support Hours</p>
+                                <p class="text-muted mb-0">Monday to Friday, 9:00 AM - 5:00 PM AEST</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

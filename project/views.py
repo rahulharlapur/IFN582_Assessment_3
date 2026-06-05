@@ -78,6 +78,11 @@ def index():
     return render_template('home.html', form=form, properties=properties, preferences=preferences, user_preferences=user_preferences)
 
 
+@bp.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+
 @bp.route('/search', methods=['GET', 'POST'])
 def search():
     form = SearchForm()
