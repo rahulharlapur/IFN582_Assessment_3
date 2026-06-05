@@ -132,7 +132,7 @@ Admin Dashboard
                                 <th>Location</th>
                                 <th>Status</th>
                                 <th>Enquiries</th>
-                                <th class="text-end">Actions</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -147,8 +147,8 @@ Admin Dashboard
                                         {{ property.status }}
                                     </span>
                                 </td>
-                                <td>{{ property.enquiry_count }}</td>
-                                <td class="text-end">
+                                <td class="text-center">{{ property.enquiry_count }}</td>
+                                <td class="text-center">
                                     <a href="{{ url_for('main.edit_property_listing', property_id=property.id) }}" class="btn btn-sm btn-outline-dark rounded-pill me-2">Edit</a>
                                     <form method="POST" action="{{ url_for('main.remove_property_listing', property_id=property.id) }}" class="d-inline">
                                         <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Delete</button>
