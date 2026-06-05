@@ -46,7 +46,7 @@ class AdminUserForm(FlaskForm):
 
     firstname = StringField("First name", validators=[InputRequired()])
     lastname = StringField("Last name", validators=[InputRequired()])
-    email = StringField("Email", validators=[InputRequired(), email()])
+    email = StringField("Email", validators=[InputRequired()])
     password = PasswordField(
         "Password",
         validators=[
@@ -99,11 +99,14 @@ class PropertyForm(FlaskForm):
     suburb = StringField("Suburb", validators=[InputRequired()])
     city = StringField("City", validators=[InputRequired()])
     postcode = StringField(
-        "Postcode",
-        validators=[
-            InputRequired(),
-            Length(min=4, max=4),
-        ],
+    "Postcode",
+    validators=[
+        InputRequired(),
+        Regexp(
+            r'^\d{4}$',
+            message="Postcode must be exactly 4 digits."
+        )
+    ],
     )
     bedrooms = IntegerField(
         "Bedrooms",
