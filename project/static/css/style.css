@@ -190,12 +190,6 @@ body {
     border-radius: 50px;
     font-weight: 500;
 }
-#property_details {
-    background:
-        radial-gradient(circle at center, rgba(73, 154, 78, 0.94) 0%, rgba(20, 83, 86, 0.92) 48%, rgba(17, 24, 39, 0.96) 100%),
-        linear-gradient(180deg, #f5f7f6 0%, #e8f4e8 100%);
-}
-
 #list-property {
     background-image: url('../img/pexels-thomas-plets-1139798-5403840.jpg');
     background-size: cover;
@@ -329,6 +323,11 @@ body > div:not(.position-fixed) {
     line-height: 1.5;
     overflow-y: auto;
 }
+
+.enquiry-message-text {
+    white-space: pre-wrap;
+}
+
 .property-summary-band {
     display: flex;
     align-items: flex-end;
@@ -507,7 +506,7 @@ body > div:not(.position-fixed) {
     justify-content: center;
     flex: 0 0 auto;
     color: #FFFFFF;
-    background: var(--primary);
+    background: #e5522a;
     border-radius: 50%;
     font-weight: 800;
 }

@@ -98,11 +98,9 @@ My Dashboard
                             <tr>
                                 <th>Property</th>
                                 <th>Buyer</th>
-                                <th>Subject</th>
-                                <th>Message</th>
                                 <th>Status</th>
                                 <th>Date</th>
-                                <th>Actions</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -110,15 +108,18 @@ My Dashboard
                             <tr>
                                 <td>{{ enquiry.property_title }}</td>
                                 <td>{{ enquiry.buyer_firstname }} {{ enquiry.buyer_lastname }}</td>
-                                <td>{{ enquiry.subject }}</td>
-                                <td class="text-muted">{{ enquiry.message[:80] }}{% if enquiry.message|length > 80 %}...{% endif %}</td>
                                 <td>
                                     <span class="badge {% if enquiry.status == 'new' %}bg-warning text-dark{% elif enquiry.status == 'responded' %}bg-info text-dark{% else %}bg-secondary{% endif %}">
                                         {{ enquiry.status }}
                                     </span>
                                 </td>
                                 <td>{{ enquiry.created_at }}</td>
-                                <td class="text-end">
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-pill me-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#sellerEnquiryModal{{ enquiry.enquiry_id }}">
+                                        View
+                                    </button>
                                     <button type="button" class="btn btn-sm btn-outline-dark rounded-pill"
                                         data-bs-toggle="modal"
                                         data-bs-target="#enquiryStatusModal{{ enquiry.enquiry_id }}">
@@ -128,7 +129,7 @@ My Dashboard
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="7" class="text-center text-muted py-4">No enquiries yet.</td>
+                                <td colspan="5" class="text-center text-muted py-4">No enquiries yet.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -186,6 +187,34 @@ My Dashboard
 </section>
 
 {% for enquiry in interactions %}
+<div class="modal fade" id="sellerEnquiryModal{{ enquiry.enquiry_id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Enquiry Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fw-semibold mb-1">{{ enquiry.property_title }}</p>
+                <p class="text-muted small mb-3">
+                    {{ enquiry.buyer_firstname }} {{ enquiry.buyer_lastname }} • {{ enquiry.created_at }}
+                </p>
+                <div class="mb-3">
+                    <p class="fw-semibold mb-1">Subject</p>
+                    <p class="mb-0">{{ enquiry.subject }}</p>
+                </div>
+                <div>
+                    <p class="fw-semibold mb-1">Message</p>
+                    <p class="text-muted mb-0 enquiry-message-text">{{ enquiry.message }}</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary rounded-pill" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="enquiryStatusModal{{ enquiry.enquiry_id }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
